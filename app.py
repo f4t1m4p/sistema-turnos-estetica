@@ -65,7 +65,7 @@ def reservar_turnos(turnos, reservas):
         "turno": turno,
     }    
     
-    reservas.append(cliente)
+    reservas.append(cliente)        
     turnos =  [t for t in turnos if t != turno]
     print(f"\nTurno reservado con éxito para {nombre}!")  
     return turnos, reservas
