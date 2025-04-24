@@ -23,8 +23,8 @@ def mostrar_turnos(turnos):
     for i, turno in enumerate(turnos):
         print(f"{i + 1}. {turno['fecha']}{turno['hora']} - {turno['servicio']} con {turno['profesional']}")
 
-from turnos import cargar_turnos, mostrar_turnos, filtrar_turnos
-from reservas import reservar_turno, cancelar_turno
+#from turnos import cargar_turnos, mostrar_turnos, filtrar_turnos
+#from reservas import reservar_turno, cancelar_turno
 
 def ver_resumen_reservas(reservas):
     """Muestra un resumen de todas las reservas."""
