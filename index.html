@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="stilos.css">
+        <link href="https://fonts.googleapis.com/css2?family=Rozha+One&family=Lora:ital,wght@0,400..700;1,400..700&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <title>Aura</title>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    </head>
+
+    <body>
+        
+        <nav class="nav">
+            <div class="nav-container">
+                <div class="logo">
+                    <a href="/tpaura.html">
+                        <h1>AURA</h1>
+                    </a>
+                </div>
+                <div class="nav-links">
+                    <ul>
+                        <li><a href="#nosotros">Nosotros</a></li>
+                        <li><a href="#servicios">Servicios</a></li>
+                        <li><a href="#contacto">Contacto</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    
+        <main>
+            <section class="hero-section">
+                <div class="carousel-container">
+                    <div class="carousel">
+                        <div class="carousel-slide">
+                            <img src="fotos/portada.png" alt="Slide 1">
+                        </div>
+                        <div class="carousel-slide">
+                            <img src="fotos/Hailey.png" alt="Slide 2">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="nosotros" class="about-section">
+                <div class="about-container">
+                    <div class="about-text">
+                        <h2>Quiénes Somos</h2>
+                        <p>En AURA, creemos en la belleza auténtica y en el poder de la autoexpresión. 
+                            Desde nuestros inicios, nos hemos dedicado a ofrecer servicios de alta calidad 
+                            que realzan la esencia única de cada persona.</p>
+                        <p>Nuestra misión es brindar experiencias inigualables a nuestros clientes, 
+                            destacando la individualidad y fomentando la confianza en sí mismos.</p>
+                    </div>
+                    <div class="about-image">
+                        <img src="fotos/uñas.jpg" alt="Imagen de nosotras">
+                    </div>
+                </div>
+            </section>
+
+            <section id="servicios" class="services-section">
+                <h2>Nuestros Servicios</h2>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <img src="fotos/soft.jpeg" alt="Soft Gel">
+                        <h3>Soft Gel</h3>
+                        <p>Extensiones naturales y duraderas con gel suave, perfectas para uñas largas y resistentes</p>
+                    </div>
+                    <div class="service-card">
+                        <img src="fotos/kapiing.jpeg" alt="Kapping">
+                        <h3>Kapping</h3>
+                        <p>Fortalecimiento y protección de tus uñas naturales con técnica profesional</p>
+                    </div>
+                    <div class="service-card">
+                        <img src="fotos/semi.jpeg" alt="Semipermanente">
+                        <h3>Semipermanente</h3>
+                        <p>Esmaltado duradero que mantiene tu manicura perfecta por semanas</p>
+                    </div>
+                </div>  
+            </section>
+
+            <section id="contacto" class="contact-section">
+                <h2>Contacto</h2>
+                <div class="contact-container">
+                    <form class="contact-form">
+                        <input type="text" placeholder="Nombre" required>
+                        <input type="email" placeholder="Email" required>
+                        <textarea placeholder="Mensaje" required></textarea>
+                        <button type="submit" class="submit-button">Enviar</button>
+                    </form>
+                    <div class="contact-info">
+                        <h3>Información de Contacto</h3>
+                        <p><i class="fas fa-map-marker-alt"></i> Dirección????</p>
+                        <p><i class="fas fa-phone"></i> 2227584761</p>
+                        <p><i class="fas fa-envelope"></i> Auraesteticadeuñas@email.com</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-container">
+                <div class="footer-section">
+                    <h3>AURA</h3>
+                    <p>Tu espacio de belleza y bienestar</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Enlaces Rápidos</h3>
+                    <ul>
+                        <li><a href="#servicios">Servicios</a></li>
+                        <li><a href="#nosotros">Nosotros</a></li>
+                        <li><a href="#contacto">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Síguenos</h3>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 AURA. Todos los derechos reservados.</p>
+            </div>
+        </footer>
+        
+
+        <script>
+            let slideIndex = 1;
+            showSlides(slideIndex);
+
+            function showSlides(n) {
+                let i;
+                let slides = document.getElementsByClassName("carousel-slide");
+                
+                if (n > slides.length) {slideIndex = 1}
+                if (n < 1) {slideIndex = slides.length}
+                
+                for (i = 0; i < slides.length; i++) {
+                    slides[i].style.display = "none";
+                }
+                
+                slides[slideIndex-1].style.display = "block";
+            }
+
+            setInterval(() => {
+                showSlides(slideIndex += 1);
+            }, 5000);
+        </script>
+
+    </body>
+</html>
