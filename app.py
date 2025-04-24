@@ -45,3 +45,46 @@ def menu_principal():
     turnos = cargar_turnos()
     reservas = []
 
+
+        
+def reservar_turnos(turnos, reservas):
+    mostrar_turnos(turnos)
+    try:
+        opcion= int(input("\nElija el número del turno que desea reservar:")) -1
+        turno = turnos[opcion]
+    except (ValueError, IndexError):
+        print("opcion invalida")
+        return turnos, reservas
+    
+    nombre = input("ingrese su nombre: ")
+    telefono = input("ingrese su telefono: ")
+    
+    cliente = {
+        "nombre": nombre,
+        "telefono": telefono,
+        "turno": turno,
+    }    
+    
+    reservas.append(cliente)
+    turnos =  [t for t in turnos if t != turno]
+    print(f"\nTurno reservado con éxito para {nombre}!")  
+    return turnos, reservas
+
+def cancelar_turno(turnos, reservas):
+    
+    nombre = input("ingrese su nombre para cancelar turnos: ")
+    nuevas_reservas = []
+    turno_recuperado = None    
+    
+    for r in reservas:
+        if r["nombre"].lower() == nombre.lower():
+            turno_recuperado = r["turno"]
+            print("Turno cancelado correctamente")
+        else:
+            nuevas_reservas.append(r)
+    
+    if turno_recuperado:
+        turnos.append(turno_recuperado)
+    else:
+        print("No se encontro una reserva con ese nombre.")
+    return turnos,nuevas_reservas
