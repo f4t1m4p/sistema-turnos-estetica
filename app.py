@@ -22,3 +22,26 @@ def mostrar_turnos(turnos):
     print("\nTurnos disponibles:")
     for i, turno in enumerate(turnos):
         print(f"{i + 1}. {turno['fecha']}{turno['hora']} - {turno['servicio']} con {turno['profesional']}")
+
+from turnos import cargar_turnos, mostrar_turnos, filtrar_turnos
+from reservas import reservar_turno, cancelar_turno
+
+def ver_resumen_reservas(reservas):
+    """Muestra un resumen de todas las reservas."""
+    print("\n--- Resumen de Reservas ---")
+    for r in reservas:
+        t = r["turno"]
+        print(f"{r['nombre']}: {t['fecha']} {t['hora']} - {t['servicio']} con {t['profesional']}")
+    print(f"\nTotal de reservas: {len(reservas)}")
+
+def ver_clientes(reservas):
+    """Lista los nombres de los clientes con reservas."""
+    print("\n--- Clientes con reservas ---")
+    for r in reservas:
+        print(f"- {r['nombre']}")
+
+def menu_principal():
+    """Menú interactivo del sistema."""
+    turnos = cargar_turnos()
+    reservas = []
+
