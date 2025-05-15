@@ -92,3 +92,121 @@ def cancelar_turno(turnos, reservas):
     else:
         print("No se encontro una reserva con ese nombre.")
     return turnos,nuevas_reservas
+
+#GUI FUNCIONES DE CONSULTA Y ANALISIS
+
+def ver_resumen_reservas(reservas):
+    """
+    Muestra un resumen agrupado de las reservas por profesional.
+
+    Parámetros:
+        reservas (list): Lista de diccionarios con información de las reservas.
+
+    Retorna:
+        None.
+    """
+    resumen = {}
+    for r in reservas:
+        profesional = r["turno"]["profesional"]
+        resumen.setdefault(profesional, []).append(r)
+
+    print("\n--- Resumen de Reservas ---")
+    for profesional, lista in resumen.items():
+        print(f"\nTurnos de {profesional}:")
+        for r in lista:
+            fecha, hora = r["turno"]["fecha_hora"]
+            print(f"- {r['nombre']} el {fecha} a las {hora} para {r['turno']['servicio']}")
+    print(f"\nTotal de reservas: {len(reservas)}")
+
+def ver_nombre_clientes(reservas):
+    """
+    Muestra una lista única de nombres de clientes con turnos reservados.
+
+    Parámetros:
+        reservas (list): Lista de diccionarios con reservas realizadas.
+
+    Retorna:
+        None.
+    """
+    nombres = {r["nombre"] for r in reservas}
+    print("Clientes con turnos reservados:")
+    for nombre in nombres:
+        print(f"- {nombre}")
+
+def ver_servicios_y_profesionales(turnos):
+    """
+    Muestra los servicios y profesionales disponibles usando conjuntos.
+
+    Parámetros:
+        turnos (list): Lista de turnos disponibles.
+
+    Retorna:
+        None.
+    """
+    servicios = set(t["servicio"] for t in turnos)
+    profesionales = set(t["profesional"] for t in turnos)
+    print("\nServicios disponibles:", ', '.join(servicios))
+    print("Profesionales disponibles:", ', '.join(profesionales))
+
+# GUI MENU INTERACTIVO
+def menu(turnos, reservas):
+    """
+    Muestra el menú principal del sistema y gestiona la interacción con el usuario.
+
+    Parámetros:
+        turnos (list): Lista de turnos disponibles.
+        reservas (list): Lista de reservas realizadas.
+
+    Retorna:
+        None.
+    """
+    while True:
+        print("\n=== MENÚ PRINCIPAL ===")
+        print("1. Ver turnos disponibles")
+        print("2. Filtrar turnos")
+        print("3. Reservar turno")
+        print("4. Cancelar turno")
+        print("5. Ver resumen de reservas")
+        print("6. Ver nombres de clientes")
+        print("7. Ver servicios y profesionales")
+        print("0. Salir")
+        opcion = input("Seleccione una opción: ")
+
+        if opcion == "1":
+            mostrar_turnos(turnos)
+        elif opcion == "2":
+            servicio = input("Filtrar por servicio (Kapping, Semi, Soft Gel o ENTER): ").strip() or None
+            profesional = input("Filtrar por profesional (Gisela, Marisol, Valentina o ENTER): ").strip() or None
+            filtrados = filtrar_turnos(turnos, servicio, profesional)
+            mostrar_turnos(filtrados)
+        elif opcion == "3":
+            turnos, reservas = reservar_turnos(turnos, reservas)
+        elif opcion == "4":
+            turnos, reservas = cancelar_turno(turnos, reservas)
+        elif opcion == "5":
+            ver_resumen_reservas(reservas)
+        elif opcion == "6":
+            ver_nombre_clientes(reservas)
+        elif opcion == "7":
+            ver_servicios_y_profesionales(turnos)
+        elif opcion == "0":
+            print("Gracias por usar el sistema de turnos. ¡Hasta luego!")
+            break
+        else:
+            print("Opción inválida")
+            
+#GUI EJECUCION 
+
+def main():
+    """
+    Función principal que inicializa el sistema de turnos y llama al menú principal.
+
+    Retorna:
+        None.
+    """
+    turnos = cargar_turnos()
+    reservas = []
+    menu(turnos, reservas)
+
+if __name__ == "_main_":
+    main()

@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-=======
+
 * {
     margin: 0;
     padding: 0;
@@ -568,4 +567,3 @@ body {
     font-size: 0.9rem;
     color: var(--white);
 }
->>>>>>> 0cfa75d (agregue como una tupla fecha_hora en la funcion cargar_turnos() y aplique conjuntos en ver_servicios_y_profesionales())
