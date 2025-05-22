@@ -250,10 +250,13 @@ def reservar_turnos(turnos, reservas):
         return turnos, reservas
 
     telefono = input("Ingrese su teléfono: ")
+    
+    documento =input("Ingrese su documento:")
 
     cliente = {
         "nombre": nombre,
         "telefono": telefono,
+        "documento": documento,
         "turno": turno,
     }
 
@@ -274,12 +277,12 @@ def cancelar_turno(turnos, reservas):
     Retorna:
         tuple: Una tupla con la lista actualizada de turnos y reservas.
     """
-    nombre = input("Ingrese su nombre para cancelar el turno: ")
+    documento = input("Ingrese su documento para cancelar el turno: ")
     nuevas_reservas = []
     turno_recuperado = None
 
     for r in reservas:
-        if r["nombre"].lower() == nombre.lower():
+        if r["documento"].lower() == documento.lower():
             turno_recuperado = r["turno"]
             print("Turno cancelado correctamente.")
         else:
@@ -288,7 +291,7 @@ def cancelar_turno(turnos, reservas):
     if turno_recuperado:
         turnos.append(turno_recuperado)
     else:
-        print("No se encontró una reserva con ese nombre.")
+        print("No se encontró una reserva con ese documento.")
 
     return turnos, nuevas_reservas
             
@@ -305,5 +308,5 @@ def main():
     reservas = []
     menu(turnos, reservas)
 
-if __name__ == "_main_":
+if __name__ == "__main__":
     main()
