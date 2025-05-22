@@ -1,14 +1,17 @@
 from functools import reduce
 
-#FATIMA FUNCIONES DE TURNOS
-def cargar_turnos():
-    """Devuelve una lista con los turnos iniciales disponibles, incluyendo fecha, hora, profesional y servicio."""
-    return [
-       {"fecha_hora": ("2025-04-26", "10:00"), "profesional": "Gisela", "servicio": "Kapping"},
-       {"fecha_hora": ("2025-04-25", "14:00"), "profesional": "Marisol", "servicio": "Semi"},
-       {"fecha_hora": ("2025-04-26", "16:00"), "profesional": "Valentina", "servicio": "Soft Gel"},
-    ]
+# MAGALI FUNCIONES DE TURNOS
 
+def cargar_turnos():
+    """
+    Devuelve una lista con los turnos iniciales disponibles,
+    incluyendo fecha, hora, profesional y servicio.
+    """
+    return [
+        {"fecha_hora": ("2025-04-26", "10:00"), "profesional": "Gisela", "servicio": "Kapping"},
+        {"fecha_hora": ("2025-04-25", "14:00"), "profesional": "Marisol", "servicio": "Semi"},
+        {"fecha_hora": ("2025-04-26", "16:00"), "profesional": "Valentina", "servicio": "Soft Gel"},
+    ]
 
 def filtrar_turnos(turnos, servicio=None, profesional=None):
     """
@@ -22,8 +25,6 @@ def filtrar_turnos(turnos, servicio=None, profesional=None):
     Retorna:
         list: Lista filtrada de turnos según los criterios dados.
     """
-    
-    
     return list(filter(lambda t:
         (servicio is None or t['servicio'] == servicio) and
         (profesional is None or t['profesional'] == profesional),
@@ -45,68 +46,87 @@ def mostrar_turnos(turnos):
         fecha, hora = turno["fecha_hora"]
         print(f"{i + 1}. {fecha} {hora} - {turno['servicio']} con {turno['profesional']}")
 
-#from turnos import cargar_turnos, mostrar_turnos, filtrar_turnos
-#from reservas import reservar_turno, cancelar_turno
+
+# FATIMA FUNCIONES DE RESERVA Y CANCELACION
+
+def validar_documento(documento):
+    """
+    Valida que el documento contenga solo dígitos.
+
+    Parámetros:
+        documento (str): Documento ingresado por el usuario.
+
+    Excepciones:
+        ValueError: Si el documento no es numérico.
+    """
+    if not documento.isdigit():
+        raise ValueError("El documento debe contener solo números.")
 
 def reservar_turnos(turnos, reservas):
     """
     Permite al usuario seleccionar y reservar un turno de la lista disponible.
-    Muestra los turnos disponibles, solicita al usuario que elija uno y luego pide su nombre y teléfono.
-    Verifica que no haya una reserva previa con el mismo nombre para evitar duplicados.
+    Maneja excepciones y validaciones según los temas vistos en clase.
 
     Parámetros:
         turnos (list): Lista de turnos disponibles.
-        reservas (list): Lista actual de reservas realizadas.
+        reservas (list): Lista de reservas realizadas.
 
     Retorna:
-        tuple: Una tupla con la lista actualizada de turnos y reservas.
+        tuple: Listas actualizadas de turnos y reservas.
     """
     mostrar_turnos(turnos)
     nombres_existentes = {r["nombre"] for r in reservas}
 
     try:
-        opcion = int(input("\nElija el número del turno que desea reservar:")) - 1
+        opcion = int(input("\nElija el número del turno que desea reservar: ")) - 1
         turno = turnos[opcion]
-    except (ValueError, IndexError):
-        print("Opción inválida")
+    except (ValueError, IndexError) as e:
+        print(f"Error al seleccionar turno: {e}")
         return turnos, reservas
 
-    nombre = input("Ingrese su nombre: ")
-    if nombre in nombres_existentes:
-        print("Ya existe una reserva con ese nombre.")
-        return turnos, reservas
+    try:
+        nombre = input("Ingrese su nombre: ")
+        if nombre in nombres_existentes:
+            raise ValueError("Ya existe una reserva con ese nombre.")
 
-    telefono = input("Ingrese su teléfono: ")
+        telefono = input("Ingrese su teléfono: ")
+        documento = input("Ingrese su documento: ")
+        validar_documento(documento)
 
-    cliente = {
-        "nombre": nombre,
-        "telefono": telefono,
-        "turno": turno,
-    }
+        cliente = {
+            "nombre": nombre,
+            "telefono": telefono,
+            "documento": documento,
+            "turno": turno,
+        }
+        reservas.append(cliente)
+        turnos = [t for t in turnos if t != turno]
+    except ValueError as e:
+        print(f"Error: {e}")
+    else:
+        print(f"\nTurno reservado con éxito para {nombre}!")
+    finally:
+        print("Fin del intento de reserva.")
 
-    reservas.append(cliente)
-    turnos = [t for t in turnos if t != turno]
-    print(f"\nTurno reservado con éxito para {nombre}!")
     return turnos, reservas
 
 def cancelar_turno(turnos, reservas):
     """
-    Cancela una reserva de turno según el nombre ingresado por el usuario.
-    Elimina la reserva y vuelve a agregar el turno a la lista de turnos disponibles.
+    Cancela una reserva de turno según el documento ingresado por el usuario.
 
     Parámetros:
         turnos (list): Lista de turnos disponibles.
         reservas (list): Lista actual de reservas realizadas.
 
     Retorna:
-        tuple: Una tupla con la lista actualizada de turnos y reservas.
+        tuple: Listas actualizadas de turnos y reservas.
     """
-    nombre = input("Ingrese su nombre para cancelar el turno: ")
+    documento = input("Ingrese su documento para cancelar el turno: ")
     nuevas_reservas = []
     turno_recuperado = None
 
     for r in reservas:
-        if r["nombre"].lower() == nombre.lower():
+        if r["documento"].lower() == documento.lower():
             turno_recuperado = r["turno"]
             print("Turno cancelado correctamente.")
         else:
@@ -115,10 +135,12 @@ def cancelar_turno(turnos, reservas):
     if turno_recuperado:
         turnos.append(turno_recuperado)
     else:
-        print("No se encontro una reserva con ese nombre.")
-    return turnos,nuevas_reservas
+        print("No se encontró una reserva con ese documento.")
 
-#GUI FUNCIONES DE CONSULTA Y ANALISIS
+    return turnos, nuevas_reservas
+
+
+# GUI FUNCIONES DE CONSULTA Y ANALISIS
 
 def ver_resumen_reservas(reservas):
     """
@@ -148,7 +170,7 @@ def ver_nombre_clientes(reservas):
     Muestra una lista única de nombres de clientes con turnos reservados.
 
     Parámetros:
-        reservas (list): Lista de diccionarios con reservas realizadas.
+        reservas (list): Lista de reservas realizadas.
 
     Retorna:
         None.
@@ -173,7 +195,9 @@ def ver_servicios_y_profesionales(turnos):
     print("\nServicios disponibles:", ', '.join(servicios))
     print("Profesionales disponibles:", ', '.join(profesionales))
 
+
 # GUI MENU INTERACTIVO
+
 def menu(turnos, reservas):
     """
     Muestra el menú principal del sistema y gestiona la interacción con el usuario.
@@ -220,82 +244,8 @@ def menu(turnos, reservas):
         else:
             print("Opción inválida")
 
-#MAGA FUNCIONES DE RESERVA Y CANCELACION
-def reservar_turnos(turnos, reservas):
-    """
-    Permite al usuario seleccionar y reservar un turno de la lista disponible.
-    Muestra los turnos disponibles, solicita al usuario que elija uno y luego pide su nombre y teléfono.
-    Verifica que no haya una reserva previa con el mismo nombre para evitar duplicados.
 
-    Parámetros:
-        turnos (list): Lista de turnos disponibles.
-        reservas (list): Lista actual de reservas realizadas.
-
-    Retorna:
-        tuple: Una tupla con la lista actualizada de turnos y reservas.
-    """
-    mostrar_turnos(turnos)
-    nombres_existentes = {r["nombre"] for r in reservas}
-
-    try:
-        opcion = int(input("\nElija el número del turno que desea reservar:")) - 1
-        turno = turnos[opcion]
-    except (ValueError, IndexError):
-        print("Opción inválida")
-        return turnos, reservas
-
-    nombre = input("Ingrese su nombre: ")
-    if nombre in nombres_existentes:
-        print("Ya existe una reserva con ese nombre.")
-        return turnos, reservas
-
-    telefono = input("Ingrese su teléfono: ")
-    
-    documento =input("Ingrese su documento:")
-
-    cliente = {
-        "nombre": nombre,
-        "telefono": telefono,
-        "documento": documento,
-        "turno": turno,
-    }
-
-    reservas.append(cliente)
-    turnos = [t for t in turnos if t != turno]
-    print(f"\nTurno reservado con éxito para {nombre}!")
-    return turnos, reservas
-
-def cancelar_turno(turnos, reservas):
-    """
-    Cancela una reserva de turno según el nombre ingresado por el usuario.
-    Elimina la reserva y vuelve a agregar el turno a la lista de turnos disponibles.
-
-    Parámetros:
-        turnos (list): Lista de turnos disponibles.
-        reservas (list): Lista actual de reservas realizadas.
-
-    Retorna:
-        tuple: Una tupla con la lista actualizada de turnos y reservas.
-    """
-    documento = input("Ingrese su documento para cancelar el turno: ")
-    nuevas_reservas = []
-    turno_recuperado = None
-
-    for r in reservas:
-        if r["documento"].lower() == documento.lower():
-            turno_recuperado = r["turno"]
-            print("Turno cancelado correctamente.")
-        else:
-            nuevas_reservas.append(r)
-
-    if turno_recuperado:
-        turnos.append(turno_recuperado)
-    else:
-        print("No se encontró una reserva con ese documento.")
-
-    return turnos, nuevas_reservas
-            
-#GUI EJECUCION 
+# GUI EJECUCIÓN
 
 def main():
     """
