@@ -4,13 +4,17 @@ from functools import reduce
 
 ENTORNO = os.getenv("ENTORNO", "desarrollo")
 if ENTORNO == "produccion":
-    print("⚠ Ejecutando en entorno de PRODUCCIÓN")
+    print(" Ejecutando en entorno de PRODUCCIÓN")
 else:
-    print("🛠 Ejecutando en entorno de DESARROLLO")
+    print(" Ejecutando en entorno de DESARROLLO")
 
 # === FUNCIONES DEL SISTEMA ===
 
 def cargar_turnos():
+    """
+    Devuelve una lista con los turnos iniciales disponibles,
+    incluyendo fecha, hora, profesional y servicio.
+    """
     return [
         {"fecha_hora": ("2025-04-26", "10:00"), "profesional": "Gisela", "servicio": "Kapping"},
         {"fecha_hora": ("2025-04-25", "14:00"), "profesional": "Marisol", "servicio": "Semi"},
@@ -18,6 +22,17 @@ def cargar_turnos():
     ]
 
 def filtrar_turnos(turnos, servicio=None, profesional=None):
+    """
+    Filtra la lista de turnos por servicio y/o profesional.
+
+    Parámetros:
+        turnos (list): Lista de turnos disponibles.
+        servicio (str or None): Nombre del servicio a filtrar (opcional).
+        profesional (str or None): Nombre del profesional a filtrar (opcional).
+
+    Retorna:
+        list: Lista filtrada de turnos según los criterios dados.
+    """
     return list(filter(lambda t:
         (servicio is None or t['servicio'] == servicio) and
         (profesional is None or t['profesional'] == profesional),
@@ -25,16 +40,45 @@ def filtrar_turnos(turnos, servicio=None, profesional=None):
     ))
 
 def mostrar_turnos(turnos):
+    """
+    Imprime en pantalla la lista de turnos disponibles, mostrando fecha, hora, servicio y profesional.
+
+    Parámetros:
+        turnos (list): Lista de turnos disponibles.
+
+    Retorna:
+        None.
+    """
     print("\nTurnos disponibles:")
     for i, turno in enumerate(turnos):
         fecha, hora = turno["fecha_hora"]
         print(f"{i + 1}. {fecha} {hora} - {turno['servicio']} con {turno['profesional']}")
 
 def validar_documento(documento):
+    """
+    Valida que el documento contenga solo dígitos.
+
+    Parámetros:
+        documento (str): Documento ingresado por el usuario.
+
+    Excepciones:
+        ValueError: Si el documento no es numérico.
+    """
     if not documento.isdigit():
         raise ValueError("El documento debe contener solo números.")
 
 def reservar_turnos(turnos, reservas):
+    """
+    Permite al usuario seleccionar y reservar un turno de la lista disponible.
+    Maneja excepciones y validaciones según los temas vistos en clase.
+
+    Parámetros:
+        turnos (list): Lista de turnos disponibles.
+        reservas (list): Lista de reservas realizadas.
+
+    Retorna:
+        tuple: Listas actualizadas de turnos y reservas.
+    """
     mostrar_turnos(turnos)
     nombres_existentes = {r["nombre"] for r in reservas}
 
@@ -72,6 +116,16 @@ def reservar_turnos(turnos, reservas):
     return turnos, reservas
 
 def cancelar_turno(turnos, reservas):
+    """
+    Cancela una reserva de turno según el documento ingresado por el usuario.
+
+    Parámetros:
+        turnos (list): Lista de turnos disponibles.
+        reservas (list): Lista actual de reservas realizadas.
+
+    Retorna:
+        tuple: Listas actualizadas de turnos y reservas.
+    """
     documento = input("Ingrese su documento para cancelar el turno: ")
     nuevas_reservas = []
     turno_recuperado = None
@@ -91,6 +145,15 @@ def cancelar_turno(turnos, reservas):
     return turnos, nuevas_reservas
 
 def ver_resumen_reservas(reservas):
+    """
+    Muestra un resumen agrupado de las reservas por profesional.
+
+    Parámetros:
+        reservas (list): Lista de diccionarios con información de las reservas.
+
+    Retorna:
+        None.
+    """
     resumen = {}
     for r in reservas:
         profesional = r["turno"]["profesional"]
@@ -105,18 +168,46 @@ def ver_resumen_reservas(reservas):
     print(f"\nTotal de reservas: {len(reservas)}")
 
 def ver_nombre_clientes(reservas):
+    """
+    Muestra una lista única de nombres de clientes con turnos reservados.
+
+    Parámetros:
+        reservas (list): Lista de reservas realizadas.
+
+    Retorna:
+        None.
+    """
     nombres = {r["nombre"] for r in reservas}
     print("Clientes con turnos reservados:")
     for nombre in nombres:
         print(f"- {nombre}")
 
 def ver_servicios_y_profesionales(turnos):
+    """
+    Muestra los servicios y profesionales disponibles usando conjuntos.
+
+    Parámetros:
+        turnos (list): Lista de turnos disponibles.
+
+    Retorna:
+        None.
+    """
     servicios = set(t["servicio"] for t in turnos)
     profesionales = set(t["profesional"] for t in turnos)
     print("\nServicios disponibles:", ', '.join(servicios))
     print("Profesionales disponibles:", ', '.join(profesionales))
 
 def menu(turnos, reservas):
+    """
+    Muestra el menú principal del sistema y gestiona la interacción con el usuario.
+
+    Parámetros:
+        turnos (list): Lista de turnos disponibles.
+        reservas (list): Lista de reservas realizadas.
+
+    Retorna:
+        None.
+    """
     while True:
         print("\n=== MENÚ PRINCIPAL ===")
         print("1. Ver turnos disponibles")
@@ -154,6 +245,12 @@ def menu(turnos, reservas):
 
 # === FUNCIÓN PRINCIPAL ===
 def main():
+    """
+    Función principal que inicializa el sistema de turnos y llama al menú principal.
+
+    Retorna:
+        None.
+    """
     turnos = cargar_turnos()
     reservas = []
     menu(turnos, reservas)
