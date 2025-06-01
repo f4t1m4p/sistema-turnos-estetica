@@ -1,4 +1,8 @@
 import pytest
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from sistema_turnos.clientes import validar_documento
 from sistema_turnos.datos import cargar_turnos
 from sistema_turnos.turnos import filtrar_turnos
