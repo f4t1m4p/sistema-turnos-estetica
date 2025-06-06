@@ -1,8 +1,2 @@
-2025-06-06 15:26:50,614 - INFO - Turnos guardados exitosamente en turnos.json
-2025-06-06 15:26:50,614 - INFO - Archivo de turnos creado con datos iniciales
-2025-06-06 15:26:50,614 - INFO - Archivo de reservas no encontrado, devolviendo lista vacía
-2025-06-06 15:27:17,890 - INFO - Reservas guardadas exitosamente en reservas.json
-2025-06-06 15:27:29,064 - INFO - Turnos cargados exitosamente desde turnos.json
-2025-06-06 15:27:29,065 - INFO - Reservas cargadas exitosamente desde reservas.json
-2025-06-06 17:07:56,322 - INFO - Turnos cargados exitosamente desde turnos.json
-2025-06-06 17:07:56,323 - INFO - Reservas cargadas exitosamente desde reservas.json
+2025-06-06 20:48:39,845 - INFO - Turnos cargados exitosamente desde turnos.json
+2025-06-06 20:48:39,846 - INFO - Archivo de reservas no encontrado, devolviendo lista vacía
