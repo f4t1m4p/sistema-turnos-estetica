@@ -1,3 +1,5 @@
+from sistema_turnos.datos import guardar_reservas
+
 def mostrar_turnos(turnos):
     print("\nTurnos disponibles:")
     for i, turno in enumerate(turnos):
@@ -40,6 +42,7 @@ def reservar_turnos(turnos, reservas):
         }
         reservas.append(cliente)
         turnos = [t for t in turnos if t != turno]
+        guardar_reservas(reservas)
     except ValueError as e:
         print(f"Error: {e}")
     else:
@@ -65,5 +68,7 @@ def cancelar_turno(turnos, reservas):
         turnos.append(turno_recuperado)
     else:
         print("No se encontró una reserva con ese documento.")
+        
+    guardar_reservas(nuevas_reservas)
 
     return turnos, nuevas_reservas

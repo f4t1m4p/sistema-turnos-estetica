@@ -11,6 +11,7 @@ logging.basicConfig(
 )
 
 ARCHIVO_TURNOS = "turnos.json"
+ARCHIVO_RESERVAS = "reservas.json"
 
 def guardar_turnos(turnos):
     """
@@ -20,7 +21,7 @@ def guardar_turnos(turnos):
         turnos (list): Lista de diccionarios con la información de los turnos
     """
     try:
-
+        # Convertir tuplas a listas para serialización JSON
         turnos_serializables = []
         for turno in turnos:
             turno_copia = turno.copy()
@@ -73,7 +74,7 @@ def agregar_turno(turno):
         turno (dict): Diccionario con la información del nuevo turno
     """
     try:
-
+        # Convertir tupla a lista si es necesario
         turno_copia = turno.copy()
         if isinstance(turno_copia["fecha_hora"], tuple):
             turno_copia["fecha_hora"] = list(turno_copia["fecha_hora"])
@@ -84,4 +85,44 @@ def agregar_turno(turno):
         logging.info(f"Nuevo turno agregado: {turno_copia}")
     except Exception as e:
         logging.error(f"Error al agregar turno: {str(e)}")
-raise
+        raise
+
+def guardar_reservas(reservas):
+    """
+    Guarda la lista de reservas en un archivo JSON.
+    
+    Args:
+        reservas (list): Lista de diccionarios con la información de las reservas
+    """
+    try:
+        with open(ARCHIVO_RESERVAS, 'w', encoding='utf-8') as archivo:
+            json.dump(reservas, archivo, ensure_ascii=False, indent=4)
+        logging.info(f"Reservas guardadas exitosamente en {ARCHIVO_RESERVAS}")
+    except Exception as e:
+        logging.error(f"Error al guardar reservas: {str(e)}")
+        raise
+
+def cargar_reservas():
+    """
+    Carga las reservas desde el archivo JSON.
+    Si el archivo no existe, devuelve una lista vacía.
+    
+    Returns:
+        list: Lista de diccionarios con la información de las reservas
+    """
+    try:
+        if not os.path.exists(ARCHIVO_RESERVAS):
+            logging.info("Archivo de reservas no encontrado, devolviendo lista vacía")
+            return []
+
+        with open(ARCHIVO_RESERVAS, 'r', encoding='utf-8') as archivo:
+            reservas = json.load(archivo)
+            logging.info(f"Reservas cargadas exitosamente desde {ARCHIVO_RESERVAS}")
+            return reservas
+    except json.JSONDecodeError as e:
+        logging.error(f"Error al decodificar JSON de reservas: {str(e)}")
+        # Dependiendo del requisito, podrías querer lanzar la excepción o devolver una lista vacía/manejar el error
+        return [] # Devolvemos lista vacía si hay un error de formato para no detener el programa
+    except Exception as e:
+        logging.error(f"Error al cargar reservas: {str(e)}")
+        return []
