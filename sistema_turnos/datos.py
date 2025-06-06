@@ -1,10 +1,87 @@
+import json
+import os
+from datetime import datetime
+import logging
+
+
+logging.basicConfig(
+    filename='sistema_turnos.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
+ARCHIVO_TURNOS = "turnos.json"
+
+def guardar_turnos(turnos):
+    """
+    Guarda la lista de turnos en un archivo JSON.
+    
+    Args:
+        turnos (list): Lista de diccionarios con la información de los turnos
+    """
+    try:
+
+        turnos_serializables = []
+        for turno in turnos:
+            turno_copia = turno.copy()
+            if isinstance(turno_copia["fecha_hora"], tuple):
+                turno_copia["fecha_hora"] = list(turno_copia["fecha_hora"])
+            turnos_serializables.append(turno_copia)
+
+        with open(ARCHIVO_TURNOS, 'w', encoding='utf-8') as archivo:
+            json.dump(turnos_serializables, archivo, ensure_ascii=False, indent=4)
+        logging.info(f"Turnos guardados exitosamente en {ARCHIVO_TURNOS}")
+    except Exception as e:
+        logging.error(f"Error al guardar turnos: {str(e)}")
+        raise
+
 def cargar_turnos():
     """
-    Devuelve una lista con los turnos iniciales disponibles,
-    incluyendo fecha, hora, profesional y servicio.
+    Carga los turnos desde el archivo JSON.
+    Si el archivo no existe, crea uno con turnos iniciales.
+    
+    Returns:
+        list: Lista de diccionarios con la información de los turnos
     """
-    return [
-        {"fecha_hora": ("2025-04-26", "10:00"), "profesional": "Gisela", "servicio": "Kapping"},
-        {"fecha_hora": ("2025-04-25", "14:00"), "profesional": "Marisol", "servicio": "Semi"},
-        {"fecha_hora": ("2025-04-26", "16:00"), "profesional": "Valentina", "servicio": "Soft Gel"},
-    ]
+    try:
+        if not os.path.exists(ARCHIVO_TURNOS):
+            turnos_iniciales = [
+                {"fecha_hora": ["2025-04-26", "10:00"], "profesional": "Gisela", "servicio": "Kapping"},
+                {"fecha_hora": ["2025-04-25", "14:00"], "profesional": "Marisol", "servicio": "Semi"},
+                {"fecha_hora": ["2025-04-26", "16:00"], "profesional": "Valentina", "servicio": "Soft Gel"},
+            ]
+            guardar_turnos(turnos_iniciales)
+            logging.info("Archivo de turnos creado con datos iniciales")
+            return turnos_iniciales
+
+        with open(ARCHIVO_TURNOS, 'r', encoding='utf-8') as archivo:
+            turnos = json.load(archivo)
+            logging.info(f"Turnos cargados exitosamente desde {ARCHIVO_TURNOS}")
+            return turnos
+    except json.JSONDecodeError as e:
+        logging.error(f"Error al decodificar JSON: {str(e)}")
+        raise
+    except Exception as e:
+        logging.error(f"Error al cargar turnos: {str(e)}")
+        raise
+
+def agregar_turno(turno):
+    """
+    Agrega un nuevo turno al archivo.
+    
+    Args:
+        turno (dict): Diccionario con la información del nuevo turno
+    """
+    try:
+
+        turno_copia = turno.copy()
+        if isinstance(turno_copia["fecha_hora"], tuple):
+            turno_copia["fecha_hora"] = list(turno_copia["fecha_hora"])
+            
+        turnos = cargar_turnos()
+        turnos.append(turno_copia)
+        guardar_turnos(turnos)
+        logging.info(f"Nuevo turno agregado: {turno_copia}")
+    except Exception as e:
+        logging.error(f"Error al agregar turno: {str(e)}")
+raise
