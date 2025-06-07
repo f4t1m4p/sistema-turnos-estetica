@@ -8,6 +8,9 @@ from sistema_turnos.interfaz import InterfazTurnos
 ENTORNO = os.getenv("ENTORNO", "desarrollo")
 
 def main(stdscr):
+    """
+    Función principal del sistema.
+    """
     if ENTORNO == "produccion":
         print(" Ejecutando en entorno de PRODUCCIÓN")
     else:
@@ -20,18 +23,18 @@ def main(stdscr):
     while True:
         opcion = interfaz.mostrar_menu_principal()
         
-        if opcion == 0:  # Cliente
+        if opcion == 0: 
             while True:
                 opcion_cliente = interfaz.menu_cliente()
                 
-                if opcion_cliente == 0:  # Ver turnos disponibles
+                if opcion_cliente == 0:  
                     interfaz.mostrar_turnos(turnos)
-                elif opcion_cliente == 1:  # Filtrar turnos
+                elif opcion_cliente == 1:  
                     servicio = interfaz.pedir_datos("Filtrar por servicio (Kapping, Semi, Soft Gel o ENTER): ")
                     profesional = interfaz.pedir_datos("Filtrar por profesional (Gisela, Marisol, Valentina o ENTER): ")
                     filtrados = filtrar_turnos(turnos, servicio or None, profesional or None)
                     interfaz.mostrar_turnos(filtrados)
-                elif opcion_cliente == 2:  # Reservar turno
+                elif opcion_cliente == 2: 
                     interfaz.mostrar_turnos(turnos)
                     try:
                         opcion = int(interfaz.pedir_datos("Elija el número del turno que desea reservar: ")) - 1
@@ -54,7 +57,7 @@ def main(stdscr):
                         interfaz.mostrar_mensaje(f"Turno reservado con éxito para {nombre}!", "exito")
                     except (ValueError, IndexError) as e:
                         interfaz.mostrar_mensaje(f"Error: {str(e)}", "error")
-                elif opcion_cliente == 3:  # Cancelar turno
+                elif opcion_cliente == 3: 
                     documento = interfaz.pedir_datos("Ingrese su documento para cancelar el turno: ")
                     nuevas_reservas = []
                     turno_recuperado = None
@@ -72,26 +75,26 @@ def main(stdscr):
                         interfaz.mostrar_mensaje("No se encontró una reserva con ese documento.", "error")
                     
                     reservas = nuevas_reservas
-                elif opcion_cliente == 4:  # Ver servicios y profesionales
+                elif opcion_cliente == 4: 
                     servicios = set(t["servicio"] for t in turnos)
                     profesionales = set(t["profesional"] for t in turnos)
                     interfaz.mostrar_mensaje(f"Servicios: {', '.join(servicios)}\nProfesionales: {', '.join(profesionales)}", "info")
                 elif opcion_cliente == 5:  # Volver
                     break
                 
-        elif opcion == 1:  # Manicurista
+        elif opcion == 1:  
             while True:
                 opcion_manicurista = interfaz.menu_manicurista()
                 
-                if opcion_manicurista == 0:  # Ver resumen de reservas
+                if opcion_manicurista == 0: 
                     interfaz.mostrar_resumen_reservas(reservas)
-                elif opcion_manicurista == 1:  # Ver nombres de clientes
+                elif opcion_manicurista == 1:  
                     nombres = {r["nombre"] for r in reservas}
                     interfaz.mostrar_mensaje("Clientes con turnos reservados:\n" + "\n".join(f"- {nombre}" for nombre in nombres), "info")
-                elif opcion_manicurista == 2:  # Volver
+                elif opcion_manicurista == 2:  
                     break
                 
-        elif opcion == 2:  # Salir
+        elif opcion == 2: 
             interfaz.mostrar_mensaje("Gracias por usar el sistema de turnos. ¡Hasta luego!", "info")
             break
 

@@ -9,24 +9,39 @@ from sistema_turnos.datos import cargar_turnos, guardar_turnos, agregar_turno
 from sistema_turnos.turnos import filtrar_turnos
 
 def test_validar_documento_valido():
+    """
+    Prueba que un documento válido sea aceptado.
+    """
     assert validar_documento("12345678") is None
 
 def test_validar_documento_invalido():
+    """
+    Prueba que un documento inválido sea rechazado.
+    """
     with pytest.raises(ValueError):
         validar_documento("abc123")
 
 def test_filtrar_por_servicio():
+    """
+    Prueba el filtrado de turnos por servicio.
+    """
     turnos = cargar_turnos()
     filtrados = filtrar_turnos(turnos, servicio="Kapping")
     assert all(t["servicio"] == "Kapping" for t in filtrados)
 
 def test_filtrar_por_profesional():
+    """
+    Prueba el filtrado de turnos por profesional.
+    """
     turnos = cargar_turnos()
     filtrados = filtrar_turnos(turnos, profesional="Gisela")
     assert all(t["profesional"] == "Gisela" for t in filtrados)
 
 
 def test_guardar_y_cargar_turnos():
+    """
+    Prueba que se puedan guardar y cargar turnos correctamente.
+    """
     
     turnos_prueba = [
         {"fecha_hora": ["2025-04-26", "10:00"], "profesional": "Test", "servicio": "Test"}
@@ -42,6 +57,9 @@ def test_guardar_y_cargar_turnos():
     assert turnos_cargados == turnos_prueba
 
 def test_agregar_turno():
+    """
+    Prueba que se pueda agregar un nuevo turno.
+    """
    
     nuevo_turno = {
         "fecha_hora": ["2025-04-27", "15:00"],
@@ -57,6 +75,9 @@ def test_agregar_turno():
     assert nuevo_turno in turnos
 
 def test_manejo_errores_archivo_inexistente():
+    """
+    Prueba el manejo de errores cuando el archivo de turnos no existe.
+    """
    
     if os.path.exists("turnos.json"):
         os.remove("turnos.json")

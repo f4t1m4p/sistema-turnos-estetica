@@ -1,8 +1,8 @@
+
 import json
 import os
 from datetime import datetime
 import logging
-
 
 logging.basicConfig(
     filename='sistema_turnos.log',
@@ -15,13 +15,10 @@ ARCHIVO_RESERVAS = "reservas.json"
 
 def guardar_turnos(turnos):
     """
-    Guarda la lista de turnos en un archivo JSON.
-    
-    Args:
-        turnos (list): Lista de diccionarios con la información de los turnos
+    Guarda los turnos en un archivo.
     """
     try:
-        # Convertir tuplas a listas para serialización JSON
+
         turnos_serializables = []
         for turno in turnos:
             turno_copia = turno.copy()
@@ -38,11 +35,7 @@ def guardar_turnos(turnos):
 
 def cargar_turnos():
     """
-    Carga los turnos desde el archivo JSON.
-    Si el archivo no existe, crea uno con turnos iniciales.
-    
-    Returns:
-        list: Lista de diccionarios con la información de los turnos
+    Carga los turnos desde un archivo.
     """
     try:
         if not os.path.exists(ARCHIVO_TURNOS):
@@ -68,13 +61,10 @@ def cargar_turnos():
 
 def agregar_turno(turno):
     """
-    Agrega un nuevo turno al archivo.
-    
-    Args:
-        turno (dict): Diccionario con la información del nuevo turno
+    Agrega un nuevo turno.
     """
     try:
-        # Convertir tupla a lista si es necesario
+
         turno_copia = turno.copy()
         if isinstance(turno_copia["fecha_hora"], tuple):
             turno_copia["fecha_hora"] = list(turno_copia["fecha_hora"])
@@ -89,10 +79,7 @@ def agregar_turno(turno):
 
 def guardar_reservas(reservas):
     """
-    Guarda la lista de reservas en un archivo JSON.
-    
-    Args:
-        reservas (list): Lista de diccionarios con la información de las reservas
+    Guarda las reservas en un archivo.
     """
     try:
         with open(ARCHIVO_RESERVAS, 'w', encoding='utf-8') as archivo:
@@ -104,11 +91,7 @@ def guardar_reservas(reservas):
 
 def cargar_reservas():
     """
-    Carga las reservas desde el archivo JSON.
-    Si el archivo no existe, devuelve una lista vacía.
-    
-    Returns:
-        list: Lista de diccionarios con la información de las reservas
+    Carga las reservas desde un archivo.
     """
     try:
         if not os.path.exists(ARCHIVO_RESERVAS):
@@ -121,8 +104,7 @@ def cargar_reservas():
             return reservas
     except json.JSONDecodeError as e:
         logging.error(f"Error al decodificar JSON de reservas: {str(e)}")
-        # Dependiendo del requisito, podrías querer lanzar la excepción o devolver una lista vacía/manejar el error
-        return [] # Devolvemos lista vacía si hay un error de formato para no detener el programa
+        return [] 
     except Exception as e:
         logging.error(f"Error al cargar reservas: {str(e)}")
         return []

@@ -3,6 +3,20 @@ from sistema_turnos.clientes import ver_resumen_reservas, ver_nombre_clientes, v
 from sistema_turnos.datos import guardar_reservas
 
 def menu(turnos, reservas, rol):
+    """
+    Función principal de menú que maneja la interacción con el usuario.
+    
+    Args:
+        turnos (list): Lista de turnos disponibles
+        reservas (list): Lista de reservas actuales
+        rol (str): Rol del usuario ('cliente' o 'manicurista')
+        
+    Esta función:
+    1. Muestra el menú correspondiente al rol
+    2. Procesa la selección del usuario
+    3. Ejecuta la acción seleccionada
+    4. Mantiene el ciclo hasta que el usuario decida salir
+    """
     while True:
         print(f"\n=== MENÚ {rol.upper()} ===")
         

@@ -1,8 +1,15 @@
+"""
+Interfaz de usuario del sistema de turnos.
+"""
+
 import curses
 import time
 from datetime import datetime
 
 class InterfazTurnos:
+    """
+    Clase que maneja la interfaz de usuario.
+    """
     def __init__(self, stdscr):
         self.stdscr = stdscr
         self.altura, self.ancho = stdscr.getmaxyx()
@@ -18,6 +25,9 @@ class InterfazTurnos:
         curses.cbreak() 
 
     def mostrar_titulo(self, titulo):
+        """
+        Muestra un título en la pantalla.
+        """
         self.stdscr.clear()
         self.stdscr.attron(curses.color_pair(1))
         self.stdscr.addstr(1, (self.ancho - len(titulo)) // 2, titulo)
@@ -25,19 +35,25 @@ class InterfazTurnos:
         self.stdscr.refresh()
 
     def mostrar_menu_principal(self):
+        """
+        Muestra el menú principal.
+        """
         self.mostrar_titulo("SISTEMA DE TURNOS")
         opciones = ["Cliente", "Manicurista", "Salir"]
         return self.menu_seleccion(opciones, 3)
 
     def menu_seleccion(self, opciones, inicio_y):
+        """
+        Maneja la selección en un menú.
+        """
         seleccion = 0
         while True:
-           
+            
             for y in range(inicio_y, inicio_y + len(opciones)):
                 self.stdscr.move(y, 0)
                 self.stdscr.clrtoeol()
 
-            # Mostrar opciones
+            
             for idx, opcion in enumerate(opciones):
                 y = inicio_y + idx
                 if y < self.altura - 1:  
@@ -62,6 +78,9 @@ class InterfazTurnos:
                 return -1
 
     def mostrar_turnos(self, turnos):
+        """
+        Muestra los turnos disponibles.
+        """
         self.mostrar_titulo("TURNOS DISPONIBLES")
         y = 3
         for i, turno in enumerate(turnos):
@@ -74,10 +93,13 @@ class InterfazTurnos:
         self.stdscr.refresh()
         while True:
             tecla = self.stdscr.getch()
-            if tecla == 10: 
+            if tecla == 10:  
                 break
 
     def mostrar_mensaje(self, mensaje, tipo="info"):
+        """
+        Muestra un mensaje al usuario.
+        """
         self.stdscr.clear()
         color = {
             "error": 3,
@@ -92,6 +114,9 @@ class InterfazTurnos:
         time.sleep(2)
 
     def pedir_datos(self, prompt):
+        """
+        Pide datos al usuario.
+        """
         self.stdscr.clear()
         self.stdscr.addstr(1, 2, prompt)
         self.stdscr.refresh()
@@ -101,6 +126,9 @@ class InterfazTurnos:
         return datos
 
     def menu_cliente(self):
+        """
+        Muestra el menú de cliente.
+        """
         opciones = [
             "Ver turnos disponibles",
             "Filtrar turnos",
@@ -112,6 +140,9 @@ class InterfazTurnos:
         return self.menu_seleccion(opciones, 3)
 
     def menu_manicurista(self):
+        """
+        Muestra el menú de manicurista.
+        """
         opciones = [
             "Ver resumen de reservas",
             "Ver nombres de clientes",
@@ -120,6 +151,9 @@ class InterfazTurnos:
         return self.menu_seleccion(opciones, 3)
 
     def mostrar_resumen_reservas(self, reservas):
+        """
+        Muestra un resumen de las reservas.
+        """
         self.mostrar_titulo("RESUMEN DE RESERVAS")
         y = 3
         resumen = {}
@@ -143,5 +177,5 @@ class InterfazTurnos:
         self.stdscr.refresh()
         while True:
             tecla = self.stdscr.getch()
-            if tecla == 10:  # Enter
+            if tecla == 10:  
                 break 

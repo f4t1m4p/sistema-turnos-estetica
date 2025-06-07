@@ -1,12 +1,18 @@
 from sistema_turnos.datos import guardar_reservas
 
 def mostrar_turnos(turnos):
+    """
+    Muestra los turnos disponibles.
+    """
     print("\nTurnos disponibles:")
     for i, turno in enumerate(turnos):
         fecha, hora = turno["fecha_hora"]
         print(f"{i + 1}. {fecha} {hora} - {turno['servicio']} con {turno['profesional']}")
 
 def filtrar_turnos(turnos, servicio=None, profesional=None):
+    """
+    Filtra los turnos por servicio o profesional.
+    """
     return list(filter(lambda t:
         (servicio is None or t['servicio'] == servicio) and
         (profesional is None or t['profesional'] == profesional),
@@ -14,6 +20,9 @@ def filtrar_turnos(turnos, servicio=None, profesional=None):
     ))
 
 def reservar_turnos(turnos, reservas):
+    """
+    Reserva un turno.
+    """
     mostrar_turnos(turnos)
     nombres_existentes = {r["nombre"] for r in reservas}
 
@@ -53,6 +62,9 @@ def reservar_turnos(turnos, reservas):
     return turnos, reservas
 
 def cancelar_turno(turnos, reservas):
+    """
+    Cancela un turno reservado.
+    """
     documento = input("Ingrese su documento para cancelar el turno: ")
     nuevas_reservas = []
     turno_recuperado = None
