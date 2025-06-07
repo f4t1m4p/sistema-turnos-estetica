@@ -1,9 +1,20 @@
+import re
+
 def validar_documento(documento):
     """
-    Valida que el documento sea válido.
+    Valida que el documento sea válido usando regex.
     """
-    if not documento.isdigit():
-        raise ValueError("El documento debe contener solo números.")
+    if not re.match(r'^\d+$', documento):
+        raise ValueError("El documento debe contener solo números")
+    return documento
+
+def validar_nombre(nombre):
+    """
+    Valida que el nombre sea válido.
+    """
+    if not re.match(r'^[A-Za-z\s]+$', nombre):
+        raise ValueError("El nombre solo debe contener letras y espacios")
+    return nombre
 
 def ver_resumen_reservas(reservas):
     """

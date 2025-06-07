@@ -4,22 +4,42 @@ import os
 import json
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sistema_turnos.clientes import validar_documento
+from sistema_turnos.clientes import validar_documento, validar_nombre
 from sistema_turnos.datos import cargar_turnos, guardar_turnos, agregar_turno
-from sistema_turnos.turnos import filtrar_turnos
+from sistema_turnos.turnos import filtrar_turnos, validar_fecha_hora
 
 def test_validar_documento_valido():
     """
     Prueba que un documento válido sea aceptado.
     """
-    assert validar_documento("12345678") is None
+    assert validar_documento("12345678") == "12345678"
 
 def test_validar_documento_invalido():
     """
     Prueba que un documento inválido sea rechazado.
     """
     with pytest.raises(ValueError):
-        validar_documento("abc123")
+        validar_documento("123abc")
+
+def test_validar_nombre_valido():
+    assert validar_nombre("Juan Perez") == "Juan Perez"
+
+def test_validar_nombre_invalido():
+    with pytest.raises(ValueError):
+        validar_nombre("Juan123")
+
+def test_validar_fecha_hora_valida():
+    fecha, hora = validar_fecha_hora("01/01/2024", "14:30")
+    assert fecha == "01/01/2024"
+    assert hora == "14:30"
+
+def test_validar_fecha_invalida():
+    with pytest.raises(ValueError):
+        validar_fecha_hora("2024/01/01", "14:30")
+
+def test_validar_hora_invalida():
+    with pytest.raises(ValueError):
+        validar_fecha_hora("01/01/2024", "25:00")
 
 def test_filtrar_por_servicio():
     """

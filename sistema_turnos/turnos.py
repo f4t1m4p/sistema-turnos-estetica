@@ -1,4 +1,15 @@
+import re
 from sistema_turnos.datos import guardar_reservas
+
+def validar_fecha_hora(fecha, hora):
+    """
+    Valida el formato de fecha y hora.
+    """
+    if not re.match(r'^\d{2}/\d{2}/\d{4}$', fecha):
+        raise ValueError("Formato de fecha inválido (DD/MM/AAAA)")
+    if not re.match(r'^\d{2}:\d{2}$', hora):
+        raise ValueError("Formato de hora inválido (HH:MM)")
+    return fecha, hora
 
 def mostrar_turnos(turnos):
     """
