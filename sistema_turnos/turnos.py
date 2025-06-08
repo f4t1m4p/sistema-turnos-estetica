@@ -9,6 +9,14 @@ def validar_fecha_hora(fecha, hora):
         raise ValueError("Formato de fecha inválido (DD/MM/AAAA)")
     if not re.match(r'^\d{2}:\d{2}$', hora):
         raise ValueError("Formato de hora inválido (HH:MM)")
+    
+    # Validar rangos de hora y minutos
+    horas, minutos = map(int, hora.split(':'))
+    if horas < 0 or horas > 23:
+        raise ValueError("Las horas deben estar entre 0 y 23")
+    if minutos < 0 or minutos > 59:
+        raise ValueError("Los minutos deben estar entre 0 y 59")
+    
     return fecha, hora
 
 def mostrar_turnos(turnos):
