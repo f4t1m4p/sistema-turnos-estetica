@@ -1,6 +1,6 @@
 import os
 import curses
-from sistema_turnos.datos import cargar_turnos, cargar_reservas
+from sistema_turnos.datos import cargar_turnos, cargar_reservas, guardar_reservas, guardar_turnos
 from sistema_turnos.turnos import mostrar_turnos, filtrar_turnos, reservar_turnos, cancelar_turno
 from sistema_turnos.clientes import ver_resumen_reservas, ver_nombre_clientes, ver_servicios_y_profesionales
 from sistema_turnos.interfaz import InterfazTurnos
@@ -54,6 +54,8 @@ def main(stdscr):
                         }
                         reservas.append(cliente)
                         turnos = [t for t in turnos if t != turno]
+                        guardar_reservas(reservas)
+                        guardar_turnos(turnos)
                         interfaz.mostrar_mensaje(f"Turno reservado con éxito para {nombre}!", "exito")
                     except (ValueError, IndexError) as e:
                         interfaz.mostrar_mensaje(f"Error: {str(e)}", "error")
@@ -75,11 +77,13 @@ def main(stdscr):
                         interfaz.mostrar_mensaje("No se encontró una reserva con ese documento.", "error")
                     
                     reservas = nuevas_reservas
+                    guardar_reservas(reservas)
+                    guardar_turnos(turnos)
                 elif opcion_cliente == 4: 
                     servicios = set(t["servicio"] for t in turnos)
                     profesionales = set(t["profesional"] for t in turnos)
                     interfaz.mostrar_mensaje(f"Servicios: {', '.join(servicios)}\nProfesionales: {', '.join(profesionales)}", "info")
-                elif opcion_cliente == 5:  # Volver
+                elif opcion_cliente == 5:  
                     break
                 
         elif opcion == 1:  

@@ -10,7 +10,7 @@ def validar_fecha_hora(fecha, hora):
     if not re.match(r'^\d{2}:\d{2}$', hora):
         raise ValueError("Formato de hora inválido (HH:MM)")
     
-    # Validar rangos de hora y minutos
+    
     horas, minutos = map(int, hora.split(':'))
     if horas < 0 or horas > 23:
         raise ValueError("Las horas deben estar entre 0 y 23")
