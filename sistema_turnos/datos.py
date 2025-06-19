@@ -1,8 +1,8 @@
-
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
+import random
 
 logging.basicConfig(
     filename='sistema_turnos.log',
@@ -13,12 +13,41 @@ logging.basicConfig(
 ARCHIVO_TURNOS = "turnos.json"
 ARCHIVO_RESERVAS = "reservas.json"
 
+def generar_turnos_iniciales():
+    """
+    Genera una lista de turnos para los próximos 3 meses.
+    """
+    turnos = []
+    servicios = ["Kapping", "Semi", "Soft Gel"]
+    profesionales = ["Gisela", "Marisol", "Valentina"]
+    horas = ["10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00"]
+    
+
+    fecha_actual = datetime.now()
+    fecha_fin = fecha_actual + timedelta(days=90) 
+    
+    fecha = fecha_actual
+    while fecha <= fecha_fin:
+
+        if fecha.weekday() < 5:  
+            for hora in horas:
+
+                for _ in range(random.randint(2, 3)):
+                    turno = {
+                        "fecha_hora": [fecha.strftime("%Y-%m-%d"), hora],
+                        "profesional": random.choice(profesionales),
+                        "servicio": random.choice(servicios)
+                    }
+                    turnos.append(turno)
+        fecha += timedelta(days=1)
+    
+    return turnos
+
 def guardar_turnos(turnos):
     """
     Guarda los turnos en un archivo.
     """
     try:
-
         turnos_serializables = []
         for turno in turnos:
             turno_copia = turno.copy()
@@ -40,9 +69,24 @@ def cargar_turnos():
     try:
         if not os.path.exists(ARCHIVO_TURNOS):
             turnos_iniciales = [
-                {"fecha_hora": ["2025-04-26", "10:00"], "profesional": "Gisela", "servicio": "Kapping"},
-                {"fecha_hora": ["2025-04-25", "14:00"], "profesional": "Marisol", "servicio": "Semi"},
-                {"fecha_hora": ["2025-04-26", "16:00"], "profesional": "Valentina", "servicio": "Soft Gel"},
+
+                {"fecha_hora": ["2025-01-27", "09:00"], "profesional": "Valentina", "servicio": "Soft Gel"},
+                {"fecha_hora": ["2025-01-27", "12:00"], "profesional": "Valentina", "servicio": "Semi"},
+                
+                {"fecha_hora": ["2025-01-27", "09:00"], "profesional": "Marisol", "servicio": "Kapping"},
+                {"fecha_hora": ["2025-01-27", "10:30"], "profesional": "Marisol", "servicio": "Semi"},
+                
+                {"fecha_hora": ["2025-01-27", "09:00"], "profesional": "Gisela", "servicio": "Semi"},
+                {"fecha_hora": ["2025-01-27", "10:30"], "profesional": "Gisela", "servicio": "Soft Gel"},
+                
+                {"fecha_hora": ["2025-01-27", "17:00"], "profesional": "Valentina", "servicio": "Kapping"},
+                {"fecha_hora": ["2025-01-27", "18:30"], "profesional": "Valentina", "servicio": "Semi"},
+                
+                {"fecha_hora": ["2025-01-27", "17:00"], "profesional": "Marisol", "servicio": "Soft Gel"},
+                {"fecha_hora": ["2025-01-27", "18:30"], "profesional": "Marisol", "servicio": "Semi"},
+                
+                {"fecha_hora": ["2025-01-27", "17:00"], "profesional": "Gisela", "servicio": "Semi"},
+                {"fecha_hora": ["2025-01-27", "18:30"], "profesional": "Gisela", "servicio": "Kapping"},
             ]
             guardar_turnos(turnos_iniciales)
             logging.info("Archivo de turnos creado con datos iniciales")

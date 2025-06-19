@@ -1,5 +1,9 @@
+import os
 import re
 from sistema_turnos.datos import guardar_reservas
+
+def limpiar_pantalla():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 def validar_fecha_hora(fecha, hora):
     """
@@ -23,18 +27,25 @@ def mostrar_turnos(turnos):
     """
     Muestra los turnos disponibles.
     """
+    limpiar_pantalla()
     print("\nTurnos disponibles:")
     for i, turno in enumerate(turnos):
         fecha, hora = turno["fecha_hora"]
         print(f"{i + 1}. {fecha} {hora} - {turno['servicio']} con {turno['profesional']}")
+    print()
+    input("Presione ENTER para continuar...")
 
 def filtrar_turnos(turnos, servicio=None, profesional=None):
     """
-    Filtra los turnos por servicio o profesional.
+    Filtra los turnos por servicio o profesional, sin importar mayúsculas/minúsculas.
     """
+    if servicio is not None:
+        servicio = servicio.lower()
+    if profesional is not None:
+        profesional = profesional.lower()
     return list(filter(lambda t:
-        (servicio is None or t['servicio'] == servicio) and
-        (profesional is None or t['profesional'] == profesional),
+        (servicio is None or t['servicio'].lower() == servicio) and
+        (profesional is None or t['profesional'].lower() == profesional),
         turnos
     ))
 

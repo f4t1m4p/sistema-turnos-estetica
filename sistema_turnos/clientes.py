@@ -16,15 +16,17 @@ def validar_nombre(nombre):
         raise ValueError("El nombre solo debe contener letras y espacios")
     return nombre
 
-def ver_resumen_reservas(reservas):
+def ver_resumen_reservas(reservas, interfaz=None):
     """
-    Muestra un resumen de las reservas.
+    Muestra un resumen de las reservas usando curses si se pasa interfaz.
     """
+    if interfaz is not None:
+        interfaz.mostrar_resumen_reservas(reservas)
+        return
     resumen = {}
     for r in reservas:
         profesional = r["turno"]["profesional"]
         resumen.setdefault(profesional, []).append(r)
-
     print("\n--- Resumen de Reservas ---")
     for profesional, lista in resumen.items():
         print(f"\nTurnos de {profesional}:")
@@ -41,12 +43,3 @@ def ver_nombre_clientes(reservas):
     print("Clientes con turnos reservados:")
     for nombre in nombres:
         print(f"- {nombre}")
-
-def ver_servicios_y_profesionales(turnos):
-    """
-    Muestra los servicios y profesionales disponibles.
-    """
-    servicios = set(t["servicio"] for t in turnos)
-    profesionales = set(t["profesional"] for t in turnos)
-    print("\nServicios disponibles:", ', '.join(servicios))
-    print("Profesionales disponibles:", ', '.join(profesionales))
