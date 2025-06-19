@@ -2,26 +2,10 @@
     {
         "fecha_hora": [
             "2025-01-27",
-            "18:30"
-        ],
-        "profesional": "Valentina",
-        "servicio": "Semi"
-    },
-    {
-        "fecha_hora": [
-            "2025-01-27",
             "17:00"
         ],
         "profesional": "Marisol",
         "servicio": "Soft Gel"
-    },
-    {
-        "fecha_hora": [
-            "2025-01-27",
-            "17:00"
-        ],
-        "profesional": "Gisela",
-        "servicio": "Semi"
     },
     {
         "fecha_hora": [
@@ -373,6 +357,14 @@
             "08:00"
         ],
         "profesional": "Gisela",
+        "servicio": "Semi"
+    },
+    {
+        "fecha_hora": [
+            "2025-01-27",
+            "18:30"
+        ],
+        "profesional": "Valentina",
         "servicio": "Semi"
     }
 ]

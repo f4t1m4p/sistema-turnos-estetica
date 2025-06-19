@@ -114,3 +114,14 @@ def cancelar_turno(turnos, reservas):
     guardar_reservas(nuevas_reservas)
 
     return turnos, nuevas_reservas
+
+def mostrar_servicios_unicos(turnos):
+    """
+    Muestra todos los servicios únicos disponibles usando un conjunto.
+    """
+    servicios = set()
+    for turno in turnos:
+        servicios.add(turno["servicio"])
+    print("Servicios disponibles (sin duplicados):")
+    for servicio in servicios:
+        print("-", servicio)

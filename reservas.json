@@ -11,5 +11,18 @@
             "profesional": "Gisela",
             "servicio": "Semi"
         }
+    },
+    {
+        "nombre": "gui",
+        "telefono": "8888",
+        "documento": "787878",
+        "turno": {
+            "fecha_hora": [
+                "2025-01-27",
+                "17:00"
+            ],
+            "profesional": "Gisela",
+            "servicio": "Semi"
+        }
     }
 ]
