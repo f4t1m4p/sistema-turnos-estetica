@@ -57,6 +57,7 @@ def guardar_turnos(turnos):
 
         with open(ARCHIVO_TURNOS, 'w', encoding='utf-8') as archivo:
             json.dump(turnos_serializables, archivo, ensure_ascii=False, indent=4)
+            
         logging.info(f"Turnos guardados exitosamente en {ARCHIVO_TURNOS}")
     except Exception as e:
         logging.error(f"Error al guardar turnos: {str(e)}")
@@ -102,6 +103,7 @@ def cargar_turnos():
     except Exception as e:
         logging.error(f"Error al cargar turnos: {str(e)}")
         raise
+    
 
 def agregar_turno(turno):
     """
@@ -144,6 +146,7 @@ def cargar_reservas():
 
         with open(ARCHIVO_RESERVAS, 'r', encoding='utf-8') as archivo:
             reservas = json.load(archivo)
+            
             logging.info(f"Reservas cargadas exitosamente desde {ARCHIVO_RESERVAS}")
             return reservas
     except json.JSONDecodeError as e:

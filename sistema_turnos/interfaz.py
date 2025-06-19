@@ -102,7 +102,7 @@ class InterfazTurnos:
         self.stdscr.refresh()
         while True:
             tecla = self.stdscr.getch()
-            if tecla == 10:  # ENTER
+            if tecla == 10:  
                 break
 
     def mostrar_mensaje(self, mensaje, tipo="info"):
@@ -118,7 +118,7 @@ class InterfazTurnos:
         self.stdscr.attron(curses.color_pair(color))
         self.stdscr.addstr(self.altura // 2, (self.ancho - len(mensaje)) // 2, mensaje)
         self.stdscr.attroff(curses.color_pair(color))
-        # Mensaje pequeño debajo
+    
         texto_enter = "Presione ENTER para volver al inicio..."
         self.stdscr.attron(curses.A_DIM)
         self.stdscr.addstr(self.altura // 2 + 2, (self.ancho - len(texto_enter)) // 2, texto_enter)
@@ -126,7 +126,7 @@ class InterfazTurnos:
         self.stdscr.refresh()
         while True:
             tecla = self.stdscr.getch()
-            if tecla == 10:  # ENTER
+            if tecla == 10:  
                 break
 
     def pedir_datos(self, prompt):
@@ -311,7 +311,7 @@ class InterfazTurnos:
         win.refresh()
         while True:
             tecla = win.getch()
-            if tecla == 10:  # ENTER
+            if tecla == 10: 
                 break
         del win
         self.stdscr.touchwin()
@@ -358,7 +358,7 @@ class InterfazTurnos:
             else:
                 self.stdscr.addstr(self.altura - 3, 2, "↑↓ para navegar, ENTER para elegir, ESC para cancelar")
             self.stdscr.attroff(curses.color_pair(4))
-            # Formulario a la derecha solo si no es solo_vista
+           
             x_form = ancho_turnos + 4
             if not solo_vista:
                 self.stdscr.attron(curses.color_pair(1))
