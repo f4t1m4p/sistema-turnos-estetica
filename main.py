@@ -47,18 +47,20 @@ def main(stdscr):
                         turno = turnos[opcion]
                         from sistema_turnos.clientes import validar_documento
                         validar_documento(documento)
-                        # Validar que no exista otra reserva con el mismo DNI
+                        
                         if any(r["documento"].lower() == documento.lower() for r in reservas):
                             interfaz.mostrar_mensaje("Ya hay un turno reservado con este DNI.", "error")
                             continue
-                        # Confirmar reserva
+                        
                         if not interfaz.confirmar_reserva(turno, nombre, telefono, documento):
-                            continue  # Volver al menú cliente
+                            continue 
                         cliente = {
                             "nombre": nombre,
                             "telefono": telefono,
                             "documento": documento,
                             "turno": turno,
+                            "estado": "Pendiente",
+                            "montoCobrado": None
                         }
                         reservas.append(cliente)
                         turnos = [t for t in turnos if t != turno]
@@ -108,6 +110,8 @@ def main(stdscr):
                 if opcion_manicurista == 0: 
                     interfaz.mostrar_resumen_reservas(reservas)
                 elif opcion_manicurista == 1:  
+                    interfaz.gestionar_reservas_pendientes(reservas)
+                elif opcion_manicurista == 2:  
                     break
                 
         elif opcion == 2: 

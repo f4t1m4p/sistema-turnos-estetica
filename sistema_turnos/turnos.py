@@ -78,6 +78,8 @@ def reservar_turnos(turnos, reservas):
             "telefono": telefono,
             "documento": documento,
             "turno": turno,
+            "estado": "Pendiente",
+            "montoCobrado": None
         }
         reservas.append(cliente)
         turnos = [t for t in turnos if t != turno]
@@ -125,3 +127,44 @@ def mostrar_servicios_unicos(turnos):
     print("Servicios disponibles (sin duplicados):")
     for servicio in servicios:
         print("-", servicio)
+
+def actualizar_estado_reserva(reservas, documento, nuevo_estado, monto_cobrado=None):
+    """
+    Actualiza el estado de una reserva y opcionalmente el monto cobrado.
+    
+    Args:
+        reservas: Lista de reservas
+        documento: Documento del cliente
+        nuevo_estado: "Atendido", "No asistió" o "Pendiente"
+        monto_cobrado: Monto cobrado (solo si nuevo_estado es "Atendido")
+    
+    Returns:
+        bool: True si se actualizó correctamente, False si no se encontró la reserva
+    """
+    for reserva in reservas:
+        if reserva["documento"].lower() == documento.lower():
+            reserva["estado"] = nuevo_estado
+            if nuevo_estado == "Atendido":
+                reserva["montoCobrado"] = monto_cobrado
+            else:
+                reserva["montoCobrado"] = None
+            return True
+    return False
+
+def obtener_reservas_pendientes(reservas, profesional=None):
+    """
+    Obtiene las reservas pendientes, opcionalmente filtradas por profesional.
+    
+    Args:
+        reservas: Lista de todas las reservas
+        profesional: Nombre del profesional (opcional)
+    
+    Returns:
+        Lista de reservas pendientes
+    """
+    reservas_pendientes = []
+    for reserva in reservas:
+        if reserva["estado"] == "Pendiente":
+            if profesional is None or reserva["turno"]["profesional"].lower() == profesional.lower():
+                reservas_pendientes.append(reserva)
+    return reservas_pendientes

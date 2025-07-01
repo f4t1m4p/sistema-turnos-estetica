@@ -2,70 +2,6 @@
     {
         "fecha_hora": [
             "2025-01-27",
-            "09:00"
-        ],
-        "profesional": "Valentina",
-        "servicio": "Soft Gel"
-    },
-    {
-        "fecha_hora": [
-            "2025-01-27",
-            "12:00"
-        ],
-        "profesional": "Valentina",
-        "servicio": "Semi"
-    },
-    {
-        "fecha_hora": [
-            "2025-01-27",
-            "09:00"
-        ],
-        "profesional": "Marisol",
-        "servicio": "Kapping"
-    },
-    {
-        "fecha_hora": [
-            "2025-01-27",
-            "09:00"
-        ],
-        "profesional": "Gisela",
-        "servicio": "Semi"
-    },
-    {
-        "fecha_hora": [
-            "2025-01-27",
-            "10:30"
-        ],
-        "profesional": "Gisela",
-        "servicio": "Soft Gel"
-    },
-    {
-        "fecha_hora": [
-            "2025-01-27",
-            "17:00"
-        ],
-        "profesional": "Valentina",
-        "servicio": "Kapping"
-    },
-    {
-        "fecha_hora": [
-            "2025-01-27",
-            "18:30"
-        ],
-        "profesional": "Valentina",
-        "servicio": "Semi"
-    },
-    {
-        "fecha_hora": [
-            "2025-01-27",
-            "17:00"
-        ],
-        "profesional": "Marisol",
-        "servicio": "Soft Gel"
-    },
-    {
-        "fecha_hora": [
-            "2025-01-27",
             "17:00"
         ],
         "profesional": "Gisela",
@@ -78,14 +14,6 @@
         ],
         "profesional": "Gisela",
         "servicio": "Kapping"
-    },
-    {
-        "fecha_hora": [
-            "2025-01-27",
-            "18:30"
-        ],
-        "profesional": "Marisol",
-        "servicio": "Semi"
     },
     {
         "fecha_hora": [
@@ -94,5 +22,13 @@
         ],
         "profesional": "Marisol",
         "servicio": "Semi"
+    },
+    {
+        "fecha_hora": [
+            "2025-01-27",
+            "17:00"
+        ],
+        "profesional": "Marisol",
+        "servicio": "Soft Gel"
     }
 ]

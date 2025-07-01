@@ -82,7 +82,7 @@ class InterfazTurnos:
         Muestra los turnos disponibles con colores.
         """
         self.stdscr.clear()
-        # Título celeste
+        
         self.stdscr.attron(curses.color_pair(1))
         self.stdscr.addstr(1, (self.ancho - len("TURNOS DISPONIBLES")) // 2, "TURNOS DISPONIBLES")
         self.stdscr.attroff(curses.color_pair(1))
@@ -93,7 +93,7 @@ class InterfazTurnos:
                 texto = f"{i + 1}. {fecha} {hora} - {turno['servicio']} con {turno['profesional']}"
                 self.stdscr.addstr(y, 2, texto)
                 y += 1
-        # Mensaje de ayuda amarillo
+        
         self.stdscr.move(self.altura - 2, 0)
         self.stdscr.clrtoeol()
         self.stdscr.attron(curses.color_pair(4))
@@ -200,45 +200,100 @@ class InterfazTurnos:
         self.stdscr.refresh()
         opciones = [
             "Ver resumen de reservas",
+            "Gestionar reservas pendientes",
             "Volver"
         ]
         return self.menu_seleccion(opciones, 3)
 
     def mostrar_resumen_reservas(self, reservas):
         """
-        Muestra un resumen de las reservas con colores.
+        Muestra un resumen de las reservas en modo navegable y seleccionable.
         """
-   
+        self.mostrar_lista_reservas_navegable(reservas)
+
+    def mostrar_lista_reservas_navegable(self, reservas):
+        """
+        Muestra una lista navegable de reservas. Al seleccionar una, muestra los detalles.
+        """
+        if not reservas:
+            self.stdscr.clear()
+            self.stdscr.addstr(2, 2, "No hay reservas para mostrar.")
+            self.stdscr.addstr(4, 2, "Presione ENTER para continuar...")
+            self.stdscr.refresh()
+            while True:
+                tecla = self.stdscr.getch()
+                if tecla == 10:
+                    return
+        seleccion = 0
+        max_vista = self.altura - 7 
+        scroll = 0
+        while True:
+            self.stdscr.clear()
+            self.stdscr.attron(curses.color_pair(1))
+            self.stdscr.addstr(1, (self.ancho - len("RESUMEN DE RESERVAS")) // 2, "RESUMEN DE RESERVAS")
+            self.stdscr.attroff(curses.color_pair(1))
+            y = 3
+            reservas_vista = reservas[scroll:scroll+max_vista]
+            for idx, r in enumerate(reservas_vista):
+                if y < self.altura - 3:
+                    fecha, hora = r["turno"]["fecha_hora"]
+                    estado = r.get("estado", "Pendiente")
+                    monto = r.get("montoCobrado")
+                    texto = f"{scroll+idx+1}. {r['nombre']} - {fecha} {hora} - {r['turno']['servicio']} con {r['turno']['profesional']}"
+                    if scroll+idx == seleccion:
+                        self.stdscr.attron(curses.color_pair(2))
+                        self.stdscr.addstr(y, 2, texto[:self.ancho-5])
+                        self.stdscr.attroff(curses.color_pair(2))
+                    else:
+                        self.stdscr.addstr(y, 2, texto[:self.ancho-5])
+                    y += 1
+            self.stdscr.attron(curses.color_pair(4))
+            self.stdscr.addstr(self.altura - 3, 2, "↑↓ para navegar, ENTER para ver detalles, ESC para volver"[:self.ancho-5])
+            self.stdscr.attroff(curses.color_pair(4))
+            self.stdscr.refresh()
+            tecla = self.stdscr.getch()
+            if tecla == curses.KEY_UP and seleccion > 0:
+                seleccion -= 1
+                if seleccion < scroll:
+                    scroll -= 1
+            elif tecla == curses.KEY_DOWN and seleccion < len(reservas) - 1:
+                seleccion += 1
+                if seleccion >= scroll + max_vista:
+                    scroll += 1
+            elif tecla == 10:  
+                self.mostrar_detalle_reserva(reservas[seleccion])
+            elif tecla == 27: 
+                return
+
+    def mostrar_detalle_reserva(self, reserva):
+        """
+        Muestra una ventana con el detalle completo de la reserva seleccionada.
+        """
         self.stdscr.clear()
         self.stdscr.attron(curses.color_pair(1))
-        self.stdscr.addstr(1, (self.ancho - len("RESUMEN DE RESERVAS")) // 2, "RESUMEN DE RESERVAS")
+        self.stdscr.addstr(1, (self.ancho - len("DETALLE DE RESERVA")) // 2, "DETALLE DE RESERVA")
         self.stdscr.attroff(curses.color_pair(1))
         y = 4
-        resumen = {}
-        for r in reservas:
-            profesional = r["turno"]["profesional"]
-            resumen.setdefault(profesional, []).append(r)
-        for profesional, lista in resumen.items():
-            if y < self.altura - 1:
-                self.stdscr.attron(curses.color_pair(2))
-                self.stdscr.addstr(y, 2, f"Turnos de {profesional}:")
-                self.stdscr.attroff(curses.color_pair(2))
-                y += 1
-                for r in lista:
-                    if y < self.altura - 1:
-                        fecha, hora = r["turno"]["fecha_hora"]
-                        texto = f"- {r['nombre']} el {fecha} a las {hora} para {r['turno']['servicio']}"
-                        self.stdscr.addstr(y, 4, texto)
-                        y += 1
+        self.stdscr.addstr(y, 4, f"Cliente: {reserva['nombre']}")
+        self.stdscr.addstr(y+1, 4, f"Teléfono: {reserva['telefono']}")
+        self.stdscr.addstr(y+2, 4, f"Documento: {reserva['documento']}")
+        fecha, hora = reserva["turno"]["fecha_hora"]
+        self.stdscr.addstr(y+3, 4, f"Fecha: {fecha} {hora}")
+        self.stdscr.addstr(y+4, 4, f"Servicio: {reserva['turno']['servicio']}")
+        self.stdscr.addstr(y+5, 4, f"Profesional: {reserva['turno']['profesional']}")
+        estado = reserva.get("estado", "Pendiente")
+        monto = reserva.get("montoCobrado")
+        self.stdscr.addstr(y+6, 4, f"Estado: {estado}")
+        if estado == "Atendido" and monto is not None:
+            self.stdscr.addstr(y+7, 4, f"Monto cobrado: ${monto:.2f}")
         self.stdscr.attron(curses.color_pair(4))
-        self.stdscr.addstr(self.altura - 2, 2, f"Total de reservas: {len(reservas)}")
-        self.stdscr.addstr(self.altura - 1, 2, "Presione ENTER para continuar...")
+        self.stdscr.addstr(self.altura - 2, 2, "Presione ESC para volver"[:self.ancho-5])
         self.stdscr.attroff(curses.color_pair(4))
         self.stdscr.refresh()
         while True:
             tecla = self.stdscr.getch()
-            if tecla == 10:
-                break
+            if tecla == 27:
+                return
 
     def mostrar_turnos_reservados(self, reservas):
         """
@@ -274,9 +329,33 @@ class InterfazTurnos:
         for r in reservas:
             if r["documento"].strip().lower() == dni.strip().lower():
                 fecha, hora = r["turno"]["fecha_hora"]
+               
+                estado = r.get("estado", "Pendiente")
+                monto = r.get("montoCobrado")
+                
                 texto = f"- {fecha} {hora} - {r['turno']['servicio']} con {r['turno']['profesional']}"
                 self.stdscr.addstr(y, 2, texto)
                 y += 1
+                
+                
+                if y < self.altura - 1:
+                    estado_texto = f"  Estado: {estado}"
+                    if estado == "Atendido" and monto is not None:
+                        estado_texto += f" - Monto cobrado: ${monto:.2f}"
+                    elif estado == "No asistió":
+                        estado_texto += " - No asistió"
+                    
+                    
+                    if estado == "Atendido":
+                        self.stdscr.attron(curses.color_pair(2)) 
+                    elif estado == "No asistió":
+                        self.stdscr.attron(curses.color_pair(3))  
+                    else:
+                        self.stdscr.attron(curses.color_pair(4)) 
+                    
+                    self.stdscr.addstr(y, 4, estado_texto)
+                    self.stdscr.attroff(curses.color_pair(2) | curses.color_pair(3) | curses.color_pair(4))
+                    y += 1
                 encontrados = True
         if not encontrados:
             self.stdscr.attron(curses.color_pair(3))
@@ -516,4 +595,190 @@ class InterfazTurnos:
             elif respuesta.replace(' ', '') == "no":
                 curses.noecho()
                 return False
-        curses.noecho() 
+        curses.noecho()
+
+    def gestionar_reservas_pendientes(self, reservas):
+        """
+        Permite a la manicurista gestionar sus reservas pendientes.
+        Puede marcar como atendida (ingresando monto) o como no asistió.
+        """
+        from sistema_turnos.turnos import obtener_reservas_pendientes, actualizar_estado_reserva
+        from sistema_turnos.datos import guardar_reservas
+        
+        # Obtener reservas pendientes
+        reservas_pendientes = obtener_reservas_pendientes(reservas)
+        
+        if not reservas_pendientes:
+            self.stdscr.clear()
+            self.stdscr.attron(curses.color_pair(1))
+            self.stdscr.addstr(1, (self.ancho - len("GESTIONAR RESERVAS PENDIENTES")) // 2, "GESTIONAR RESERVAS PENDIENTES")
+            self.stdscr.attroff(curses.color_pair(1))
+            self.stdscr.attron(curses.color_pair(3))
+            self.stdscr.addstr(3, 2, "No hay reservas pendientes.")
+            self.stdscr.attroff(curses.color_pair(3))
+            self.stdscr.attron(curses.color_pair(4))
+            self.stdscr.addstr(self.altura - 2, 2, "Presione ENTER para continuar...")
+            self.stdscr.attroff(curses.color_pair(4))
+            self.stdscr.refresh()
+            while True:
+                tecla = self.stdscr.getch()
+                if tecla == 10:
+                    break
+            return
+        
+
+        seleccion = 0
+        while True:
+            self.stdscr.clear()
+            self.stdscr.attron(curses.color_pair(1))
+            self.stdscr.addstr(1, (self.ancho - len("RESERVAS PENDIENTES")) // 2, "RESERVAS PENDIENTES")
+            self.stdscr.attroff(curses.color_pair(1))
+            
+            y = 3
+            for i, reserva in enumerate(reservas_pendientes):
+                if y < self.altura - 4:
+                    fecha, hora = reserva["turno"]["fecha_hora"]
+                    texto = f"{i+1}. {reserva['nombre']} - {fecha} {hora} - {reserva['turno']['servicio']} con {reserva['turno']['profesional']}"
+                    
+                    if i == seleccion:
+                        self.stdscr.attron(curses.color_pair(2))
+                        self.stdscr.addstr(y, 2, texto)
+                        self.stdscr.attroff(curses.color_pair(2))
+                    else:
+                        self.stdscr.addstr(y, 2, texto)
+                    y += 1
+            
+            self.stdscr.attron(curses.color_pair(4))
+            self.stdscr.addstr(self.altura - 3, 2, "↑↓ para navegar, ENTER para seleccionar, ESC para volver")
+            self.stdscr.attroff(curses.color_pair(4))
+            self.stdscr.refresh()
+            
+            tecla = self.stdscr.getch()
+            if tecla == curses.KEY_UP and seleccion > 0:
+                seleccion -= 1
+            elif tecla == curses.KEY_DOWN and seleccion < len(reservas_pendientes) - 1:
+                seleccion += 1
+            elif tecla == 10: 
+                
+                self.mostrar_opciones_reserva(reservas_pendientes[seleccion], reservas)
+                break
+            elif tecla == 27:  
+                break
+    
+    def mostrar_opciones_reserva(self, reserva, reservas):
+        """
+        Muestra las opciones para una reserva específica (marcar como atendida o no asistió).
+        Ahora se escribe 'atendida' o 'no asistio' en vez de elegir con números.
+        """
+        from sistema_turnos.turnos import actualizar_estado_reserva
+        from sistema_turnos.datos import guardar_reservas
+        import unicodedata
+        
+        def normalizar(texto):
+            return unicodedata.normalize('NFKD', texto).encode('ASCII', 'ignore').decode('ASCII').lower().strip()
+        
+        while True:
+            self.stdscr.clear()
+            self.stdscr.attron(curses.color_pair(1))
+            self.stdscr.addstr(1, (self.ancho - len("GESTIONAR RESERVA")) // 2, "GESTIONAR RESERVA")
+            self.stdscr.attroff(curses.color_pair(1))
+            
+           
+            y = 3
+            x_info = 2
+            fecha, hora = reserva["turno"]["fecha_hora"]
+            self.stdscr.addstr(y, x_info, f"Cliente: {reserva['nombre']}")
+            self.stdscr.addstr(y+1, x_info, f"Fecha: {fecha} {hora}")
+            self.stdscr.addstr(y+2, x_info, f"Servicio: {reserva['turno']['servicio']}")
+            self.stdscr.addstr(y+3, x_info, f"Profesional: {reserva['turno']['profesional']}")
+            self.stdscr.addstr(y+4, x_info, f"Documento: {reserva['documento']}")
+            
+
+            x_opciones = self.ancho // 2 + 4
+            y_op = y
+            self.stdscr.attron(curses.color_pair(2))
+            self.stdscr.addstr(y_op, x_opciones, "Escriba: atendida  o  no asistio")
+            self.stdscr.attroff(curses.color_pair(2))
+            
+            self.stdscr.attron(curses.color_pair(4))
+            self.stdscr.addstr(self.altura - 2, 2, "ESC para volver | Ingrese acción y ENTER:")
+            self.stdscr.attroff(curses.color_pair(4))
+            self.stdscr.refresh()
+            
+            curses.echo()
+            self.stdscr.move(self.altura - 1, 2)
+            self.stdscr.clrtoeol()
+            entrada = self.stdscr.getstr(self.altura - 1, 2, 20).decode('utf-8').strip()
+            curses.noecho()
+            if entrada == '' and self.stdscr.getch() == 27:
+                break
+            accion = normalizar(entrada)
+            if accion == 'atendida':
+                self.marcar_como_atendida(reserva, reservas)
+                break
+            elif accion == 'no asistio':
+                if actualizar_estado_reserva(reservas, reserva["documento"], "No asistió"):
+                    guardar_reservas(reservas)
+                    self.mostrar_mensaje("Reserva marcada como 'No asistió'", "exito")
+                else:
+                    self.mostrar_mensaje("Error al actualizar la reserva", "error")
+                break
+            elif entrada == '':
+                continue
+            else:
+                self.stdscr.attron(curses.color_pair(3))
+                self.stdscr.addstr(self.altura - 3, 2, "Acción inválida. Escriba 'atendida' o 'no asistio'."[:self.ancho-5])
+                self.stdscr.attroff(curses.color_pair(3))
+                self.stdscr.refresh()
+                curses.napms(1500)
+    
+    def marcar_como_atendida(self, reserva, reservas):
+        """
+        Permite marcar una reserva como atendida e ingresar el monto cobrado.
+        """
+        from sistema_turnos.turnos import actualizar_estado_reserva
+        from sistema_turnos.datos import guardar_reservas
+        
+        self.stdscr.clear()
+        self.stdscr.attron(curses.color_pair(1))
+        self.stdscr.addstr(1, (self.ancho - len("MARCAR COMO ATENDIDA")) // 2, "MARCAR COMO ATENDIDA")
+        self.stdscr.attroff(curses.color_pair(1))
+        
+        fecha, hora = reserva["turno"]["fecha_hora"]
+        y = 3
+        self.stdscr.addstr(y, 2, f"Cliente: {reserva['nombre']}")
+        self.stdscr.addstr(y+1, 2, f"Fecha: {fecha} {hora}")
+        self.stdscr.addstr(y+2, 2, f"Servicio: {reserva['turno']['servicio']}")
+        
+        y += 4
+        self.stdscr.addstr(y, 2, "Ingrese el monto cobrado:")
+        self.stdscr.refresh()
+        
+        curses.echo()
+        while True:
+            self.stdscr.move(y+1, 2)
+            self.stdscr.clrtoeol()
+            monto_str = self.stdscr.getstr(y+1, 2, 20).decode('utf-8').strip()
+            
+            try:
+                monto = float(monto_str)
+                if monto <= 0:
+                    raise ValueError("El monto debe ser mayor a 0")
+                break
+            except ValueError:
+                self.stdscr.attron(curses.color_pair(3))
+                self.stdscr.addstr(y+2, 2, "Error: Ingrese un monto válido (número mayor a 0)")
+                self.stdscr.attroff(curses.color_pair(3))
+                self.stdscr.refresh()
+                curses.napms(2000)
+                self.stdscr.move(y+2, 0)
+                self.stdscr.clrtoeol()
+        
+        curses.noecho()
+        
+       
+        if actualizar_estado_reserva(reservas, reserva["documento"], "Atendido", monto):
+            guardar_reservas(reservas)
+            self.mostrar_mensaje(f"Reserva marcada como atendida. Monto: ${monto:.2f}", "exito")
+        else:
+            self.mostrar_mensaje("Error al actualizar la reserva", "error") 
