@@ -700,15 +700,16 @@ class InterfazTurnos:
             self.stdscr.addstr(y_op, x_opciones, "Escriba: atendida  o  no asistio")
             self.stdscr.attroff(curses.color_pair(2))
             
+
             self.stdscr.attron(curses.color_pair(4))
-            self.stdscr.addstr(self.altura - 2, 2, "ESC para volver | Ingrese acción y ENTER:")
+            self.stdscr.addstr(y_op + 2, x_opciones, "Ingrese acción y ENTER:")
             self.stdscr.attroff(curses.color_pair(4))
             self.stdscr.refresh()
             
             curses.echo()
-            self.stdscr.move(self.altura - 1, 2)
+            self.stdscr.move(y_op + 3, x_opciones)
             self.stdscr.clrtoeol()
-            entrada = self.stdscr.getstr(self.altura - 1, 2, 20).decode('utf-8').strip()
+            entrada = self.stdscr.getstr(y_op + 3, x_opciones, 20).decode('utf-8').strip()
             curses.noecho()
             if entrada == '' and self.stdscr.getch() == 27:
                 break

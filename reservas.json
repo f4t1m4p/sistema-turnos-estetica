@@ -118,5 +118,20 @@
         },
         "estado": "Atendido",
         "montoCobrado": 50000.0
+    },
+    {
+        "nombre": "luli",
+        "telefono": "121212",
+        "documento": "545455",
+        "turno": {
+            "fecha_hora": [
+                "2025-01-27",
+                "18:30"
+            ],
+            "profesional": "Gisela",
+            "servicio": "Kapping"
+        },
+        "estado": "Atendido",
+        "montoCobrado": 11000.0
     }
 ]
