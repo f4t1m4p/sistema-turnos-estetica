@@ -718,11 +718,33 @@ class InterfazTurnos:
                 self.marcar_como_atendida(reserva, reservas)
                 break
             elif accion == 'no asistio':
-                if actualizar_estado_reserva(reservas, reserva["documento"], "No asistió"):
-                    guardar_reservas(reservas)
-                    self.mostrar_mensaje("Reserva marcada como 'No asistió'", "exito")
-                else:
-                    self.mostrar_mensaje("Error al actualizar la reserva", "error")
+               
+                self.stdscr.clear()
+                self.stdscr.attron(curses.color_pair(1))
+                self.stdscr.addstr(1, (self.ancho - len("CONFIRMAR INFORMACIÓN FINAL")) // 2, "CONFIRMAR INFORMACIÓN FINAL")
+                self.stdscr.attroff(curses.color_pair(1))
+                y_conf = 3
+                self.stdscr.addstr(y_conf, 2, f"Cliente: {reserva['nombre']}")
+                self.stdscr.addstr(y_conf+1, 2, f"Fecha: {fecha} {hora}")
+                self.stdscr.addstr(y_conf+2, 2, f"Servicio: {reserva['turno']['servicio']}")
+                self.stdscr.addstr(y_conf+3, 2, f"Profesional: {reserva['turno']['profesional']}")
+                self.stdscr.addstr(y_conf+4, 2, f"Documento: {reserva['documento']}")
+                self.stdscr.addstr(y_conf+5, 2, f"Estado: No asistió")
+                self.stdscr.attron(curses.color_pair(2))
+                self.stdscr.addstr(y_conf+7, 2, "¿Confirmar información? (si/no)")
+                self.stdscr.attroff(curses.color_pair(2))
+                self.stdscr.refresh()
+                curses.echo()
+                self.stdscr.move(y_conf+8, 2)
+                self.stdscr.clrtoeol()
+                confirm = self.stdscr.getstr(y_conf+8, 2, 5).decode('utf-8').strip().lower()
+                curses.noecho()
+                if confirm == "si":
+                    if actualizar_estado_reserva(reservas, reserva["documento"], "No asistió"):
+                        guardar_reservas(reservas)
+                        self.mostrar_mensaje("Reserva marcada como 'No asistió'", "exito")
+                    else:
+                        self.mostrar_mensaje("Error al actualizar la reserva", "error")
                 break
             elif entrada == '':
                 continue
@@ -777,9 +799,35 @@ class InterfazTurnos:
         
         curses.noecho()
         
-       
-        if actualizar_estado_reserva(reservas, reserva["documento"], "Atendido", monto):
-            guardar_reservas(reservas)
-            self.mostrar_mensaje(f"Reserva marcada como atendida. Monto: ${monto:.2f}", "exito")
+        
+        self.stdscr.clear()
+        self.stdscr.attron(curses.color_pair(1))
+        self.stdscr.addstr(1, (self.ancho - len("CONFIRMAR INFORMACIÓN FINAL")) // 2, "CONFIRMAR INFORMACIÓN FINAL")
+        self.stdscr.attroff(curses.color_pair(1))
+        y_conf = 3
+        self.stdscr.addstr(y_conf, 2, f"Cliente: {reserva['nombre']}")
+        self.stdscr.addstr(y_conf+1, 2, f"Fecha: {fecha} {hora}")
+        self.stdscr.addstr(y_conf+2, 2, f"Servicio: {reserva['turno']['servicio']}")
+        self.stdscr.addstr(y_conf+3, 2, f"Profesional: {reserva['turno']['profesional']}")
+        self.stdscr.addstr(y_conf+4, 2, f"Documento: {reserva['documento']}")
+        self.stdscr.addstr(y_conf+5, 2, f"Estado: Atendido")
+        self.stdscr.addstr(y_conf+6, 2, f"Monto cobrado: ${monto:.2f}")
+        self.stdscr.attron(curses.color_pair(2))
+        self.stdscr.addstr(y_conf+8, 2, "¿Confirmar información? (si/no)")
+        self.stdscr.attroff(curses.color_pair(2))
+        self.stdscr.refresh()
+        curses.echo()
+        self.stdscr.move(y_conf+9, 2)
+        self.stdscr.clrtoeol()
+        confirm = self.stdscr.getstr(y_conf+9, 2, 5).decode('utf-8').strip().lower()
+        curses.noecho()
+        
+        if confirm == "si":
+            if actualizar_estado_reserva(reservas, reserva["documento"], "Atendido", monto):
+                guardar_reservas(reservas)
+                self.mostrar_mensaje(f"Reserva marcada como atendida. Monto: ${monto:.2f}", "exito")
+            else:
+                self.mostrar_mensaje("Error al actualizar la reserva", "error")
         else:
-            self.mostrar_mensaje("Error al actualizar la reserva", "error") 
+           
+            return 
