@@ -120,9 +120,10 @@ class InterfazTurnos:
         self.stdscr.attroff(curses.color_pair(color))
     
         texto_enter = "Presione ENTER para volver al inicio..."
-        self.stdscr.attron(curses.A_DIM)
-        self.stdscr.addstr(self.altura // 2 + 2, (self.ancho - len(texto_enter)) // 2, texto_enter)
-        self.stdscr.attroff(curses.A_DIM)
+        if mensaje.strip() != "Gracias por usar el sistema de turnos. ¡Hasta luego!":
+            self.stdscr.attron(curses.A_DIM)
+            self.stdscr.addstr(self.altura // 2 + 2, (self.ancho - len(texto_enter)) // 2, texto_enter)
+            self.stdscr.attroff(curses.A_DIM)
         self.stdscr.refresh()
         while True:
             tecla = self.stdscr.getch()
@@ -201,9 +202,10 @@ class InterfazTurnos:
         opciones = [
             "Ver resumen de reservas",
             "Gestionar reservas pendientes",
+            "Filtrar turnos",
             "Volver"
         ]
-        return self.menu_seleccion(opciones, 3)
+        return self.menu_seleccion(opciones, 4)
 
     def mostrar_resumen_reservas(self, reservas):
         """
@@ -261,7 +263,9 @@ class InterfazTurnos:
                 if seleccion >= scroll + max_vista:
                     scroll += 1
             elif tecla == 10:  
-                self.mostrar_detalle_reserva(reservas[seleccion])
+                resultado = self.mostrar_detalle_reserva(reservas[seleccion])
+                if resultado == 'menu':
+                    return 'menu'
             elif tecla == 27: 
                 return
 
@@ -287,29 +291,57 @@ class InterfazTurnos:
         if estado == "Atendido" and monto is not None:
             self.stdscr.addstr(y+7, 4, f"Monto cobrado: ${monto:.2f}")
         self.stdscr.attron(curses.color_pair(4))
-        self.stdscr.addstr(self.altura - 2, 2, "Presione ESC para volver"[:self.ancho-5])
+        self.stdscr.addstr(self.altura - 2, 2, "Presione ESC para volver, ENTER para ir al menú"[:self.ancho-5])
         self.stdscr.attroff(curses.color_pair(4))
         self.stdscr.refresh()
         while True:
             tecla = self.stdscr.getch()
             if tecla == 27:
-                return
-
+                return  
+            elif tecla == 10:
+                return 'menu'  
     def mostrar_turnos_reservados(self, reservas):
         """
         Pide DNI y muestra los turnos reservados para ese documento. Permite volver con ESC.
         """
-        self.stdscr.clear()
-        self.stdscr.addstr(1, 2, "Ingrese su DNI para ver sus turnos reservados:")
-        self.stdscr.attron(curses.color_pair(4))
-        self.stdscr.addstr(self.altura - 2, 2, "Presione ESC para volver")
-        self.stdscr.attroff(curses.color_pair(4))
-        self.stdscr.refresh()
-        curses.echo()
-        dni = self.pedir_datos_con_esc("Ingrese su DNI para ver sus turnos reservados:")
-        if dni is None:
-            return None
-        curses.noecho()
+        while True:
+            self.stdscr.clear()
+            prompt = "Ingrese su DNI para ver sus turnos reservados:"
+            self.stdscr.addstr(1, 2, prompt)
+            self.stdscr.addstr(self.altura - 2, 2, "Presione ESC para volver")
+            if 'error_dni' in locals() and error_dni:
+                self.stdscr.attron(curses.color_pair(3))
+                self.stdscr.addstr(3, 2, "El DNI debe contener solo números.")
+                self.stdscr.attroff(curses.color_pair(3))
+            self.stdscr.move(2, 2)
+            self.stdscr.clrtoeol()
+            self.stdscr.refresh()
+            curses.echo()
+            buffer = b""
+            while True:
+                ch = self.stdscr.getch(2, 2 + len(buffer))
+                if ch == 27:  # ESC
+                    curses.noecho()
+                    return None
+                elif ch in (10, 13):  # ENTER
+                    break
+                elif ch in (8, 127):  # Backspace
+                    if buffer:
+                        buffer = buffer[:-1]
+                        self.stdscr.move(2, 2 + len(buffer))
+                        self.stdscr.delch()
+                else:
+                    buffer += bytes([ch])
+                    self.stdscr.addch(2, 2 + len(buffer) - 1, ch)
+            curses.noecho()
+            dni = buffer.decode('utf-8').strip()
+            if dni == "":
+                continue
+            if not dni.isdigit():
+                error_dni = True
+                continue
+            error_dni = False
+            break
         self.stdscr.clear()
         self.stdscr.addstr(1, (self.ancho - len("MIS TURNOS RESERVADOS")) // 2, "MIS TURNOS RESERVADOS")
         y = 4
@@ -555,9 +587,15 @@ class InterfazTurnos:
         self.stdscr.attroff(curses.color_pair(4))
         self.stdscr.refresh()
         curses.echo()
+        error = False
         while True:
             self.stdscr.move(y+6, 4)
             self.stdscr.clrtoeol()
+            if error:
+                self.stdscr.attron(curses.color_pair(3))
+                self.stdscr.addstr(y+7, 4, "Respuesta inválida. Escriba 'si' o 'no'.")
+                self.stdscr.attroff(curses.color_pair(3))
+            self.stdscr.refresh()
             respuesta = self.stdscr.getstr(y+6, 4, 5).decode('utf-8').strip().lower()
             if respuesta.replace(' ', '') == "si":
                 curses.noecho()
@@ -565,6 +603,8 @@ class InterfazTurnos:
             elif respuesta.replace(' ', '') == "no":
                 curses.noecho()
                 return False
+            else:
+                error = True
         curses.noecho()
 
     def confirmar_cancelacion(self, turno, documento):
@@ -585,9 +625,15 @@ class InterfazTurnos:
         self.stdscr.attroff(curses.color_pair(4))
         self.stdscr.refresh()
         curses.echo()
+        error = False
         while True:
             self.stdscr.move(y+4, 4)
             self.stdscr.clrtoeol()
+            if error:
+                self.stdscr.attron(curses.color_pair(3))
+                self.stdscr.addstr(y+5, 4, "Respuesta inválida. Escriba 'si' o 'no'.")
+                self.stdscr.attroff(curses.color_pair(3))
+            self.stdscr.refresh()
             respuesta = self.stdscr.getstr(y+4, 4, 5).decode('utf-8').strip().lower()
             if respuesta.replace(' ', '') == "si":
                 curses.noecho()
@@ -595,6 +641,8 @@ class InterfazTurnos:
             elif respuesta.replace(' ', '') == "no":
                 curses.noecho()
                 return False
+            else:
+                error = True
         curses.noecho()
 
     def gestionar_reservas_pendientes(self, reservas):
@@ -683,7 +731,6 @@ class InterfazTurnos:
             self.stdscr.addstr(1, (self.ancho - len("GESTIONAR RESERVA")) // 2, "GESTIONAR RESERVA")
             self.stdscr.attroff(curses.color_pair(1))
             
-           
             y = 3
             x_info = 2
             fecha, hora = reserva["turno"]["fecha_hora"]
@@ -702,17 +749,31 @@ class InterfazTurnos:
             
 
             self.stdscr.attron(curses.color_pair(4))
-            self.stdscr.addstr(y_op + 2, x_opciones, "Ingrese acción y ENTER:")
+            self.stdscr.addstr(self.altura - 2, 2, "ENTER para confirmar, ESC para volver"[:self.ancho-5])
             self.stdscr.attroff(curses.color_pair(4))
             self.stdscr.refresh()
             
             curses.echo()
-            self.stdscr.move(y_op + 3, x_opciones)
-            self.stdscr.clrtoeol()
-            entrada = self.stdscr.getstr(y_op + 3, x_opciones, 20).decode('utf-8').strip()
+            buffer = b""
+            while True:
+                ch = self.stdscr.getch(y_op + 3, x_opciones + len(buffer))
+                if ch == 27:  
+                    curses.noecho()
+                    return
+                elif ch in (10, 13): 
+                    break
+                elif ch in (8, 127):  
+                    if buffer:
+                        buffer = buffer[:-1]
+                        self.stdscr.move(y_op + 3, x_opciones + len(buffer))
+                        self.stdscr.delch()
+                else:
+                    buffer += bytes([ch])
+                    self.stdscr.addch(y_op + 3, x_opciones + len(buffer) - 1, ch)
             curses.noecho()
-            if entrada == '' and self.stdscr.getch() == 27:
-                break
+            entrada = buffer.decode('utf-8').strip()
+            if entrada == '':
+                continue
             accion = normalizar(entrada)
             if accion == 'atendida':
                 self.marcar_como_atendida(reserva, reservas)
@@ -817,17 +878,25 @@ class InterfazTurnos:
         self.stdscr.attroff(curses.color_pair(2))
         self.stdscr.refresh()
         curses.echo()
-        self.stdscr.move(y_conf+9, 2)
-        self.stdscr.clrtoeol()
-        confirm = self.stdscr.getstr(y_conf+9, 2, 5).decode('utf-8').strip().lower()
-        curses.noecho()
-        
-        if confirm == "si":
-            if actualizar_estado_reserva(reservas, reserva["documento"], "Atendido", monto):
-                guardar_reservas(reservas)
-                self.mostrar_mensaje(f"Reserva marcada como atendida. Monto: ${monto:.2f}", "exito")
+        error = False
+        while True:
+            self.stdscr.move(y_conf+9, 2)
+            self.stdscr.clrtoeol()
+            if error:
+                self.stdscr.attron(curses.color_pair(3))
+                self.stdscr.addstr(y_conf+10, 2, "Respuesta inválida. Escriba 'si' o 'no'.")
+                self.stdscr.attroff(curses.color_pair(3))
+            self.stdscr.refresh()
+            confirm = self.stdscr.getstr(y_conf+9, 2, 5).decode('utf-8').strip().lower()
+            if confirm == "si":
+                if actualizar_estado_reserva(reservas, reserva["documento"], "Atendido", monto):
+                    guardar_reservas(reservas)
+                    self.mostrar_mensaje(f"Reserva marcada como atendida. Monto: ${monto:.2f}", "exito")
+                else:
+                    self.mostrar_mensaje("Error al actualizar la reserva", "error")
+                break
+            elif confirm == "no":
+                break
             else:
-                self.mostrar_mensaje("Error al actualizar la reserva", "error")
-        else:
-           
-            return 
+                error = True
+        curses.noecho() 

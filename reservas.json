@@ -1,8 +1,8 @@
 [
     {
-        "nombre": "mm",
-        "telefono": "5",
-        "documento": "1",
+        "nombre": "cami",
+        "telefono": "121212",
+        "documento": "212121",
         "turno": {
             "fecha_hora": [
                 "2025-01-27",
@@ -11,22 +11,7 @@
             "profesional": "Marisol",
             "servicio": "Semi"
         },
-        "estado": "Atendido",
-        "montoCobrado": 400.0
-    },
-    {
-        "nombre": "mm",
-        "telefono": "6",
-        "documento": "644",
-        "turno": {
-            "fecha_hora": [
-                "2025-01-27",
-                "17:00"
-            ],
-            "profesional": "Gisela",
-            "servicio": "Semi"
-        },
-        "estado": "Atendido",
-        "montoCobrado": 70000.0
+        "estado": "Pendiente",
+        "montoCobrado": null
     }
 ]

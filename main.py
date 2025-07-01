@@ -30,11 +30,98 @@ def main(stdscr):
                 if opcion_cliente == 0:  
                     interfaz.reservar_turno_columna_lateral(turnos, solo_vista=True)
                 elif opcion_cliente == 1:  
-                    servicio = interfaz.pedir_datos_con_esc("Filtrar por servicio (Kapping, Semi, Soft Gel o ENTER): ")
-                    if servicio is None:
+                    opciones_servicio = ["kapping", "semi", "soft gel"]
+                    opciones_profesional = ["gisela", "marisol", "valentina"]
+                    cancelar_filtro = False
+                    
+                    while True:
+                        interfaz.stdscr.clear()
+                        interfaz.stdscr.addstr(1, 2, "Filtrar por servicio (Kapping, Semi, Soft Gel o ENTER): ")
+                        interfaz.stdscr.addstr(interfaz.altura - 2, 2, "ESC para volver")
+                        if 'error_servicio' in locals() and error_servicio:
+                            interfaz.stdscr.attron(curses.color_pair(3))
+                            interfaz.stdscr.addstr(2, 2, "Servicio inválido. Opciones: Kapping, Semi, Soft Gel.")
+                            interfaz.stdscr.attroff(curses.color_pair(3))
+                        interfaz.stdscr.move(3, 2)
+                        interfaz.stdscr.clrtoeol()
+                        interfaz.stdscr.refresh()
+                        curses.echo()
+                        buffer = b""
+                        while True:
+                            ch = interfaz.stdscr.getch(3, 2 + len(buffer))
+                            if ch == 27:
+                                curses.noecho()
+                                cancelar_filtro = True
+                                break
+                            elif ch in (10, 13):
+                                break
+                            elif ch in (8, 127):
+                                if buffer:
+                                    buffer = buffer[:-1]
+                                    interfaz.stdscr.move(3, 2 + len(buffer))
+                                    interfaz.stdscr.delch()
+                            else:
+                                buffer += bytes([ch])
+                                interfaz.stdscr.addch(3, 2 + len(buffer) - 1, ch)
+                        curses.noecho()
+                        if cancelar_filtro:
+                            break
+                        servicio = buffer.decode('utf-8').strip().lower()
+                        if servicio == "":
+                            servicio = None
+                            error_servicio = False
+                            break
+                        if not servicio.replace(" ", "").isalpha() or servicio not in opciones_servicio:
+                            error_servicio = True
+                            continue
+                        error_servicio = False
+                        break
+                    if cancelar_filtro:
                         continue
-                    profesional = interfaz.pedir_datos_con_esc("Filtrar por profesional (Gisela, Marisol, Valentina o ENTER): ")
-                    if profesional is None:
+                   
+                    while True:
+                        interfaz.stdscr.clear()
+                        interfaz.stdscr.addstr(1, 2, "Filtrar por profesional (Gisela, Marisol, Valentina o ENTER): ")
+                        interfaz.stdscr.addstr(interfaz.altura - 2, 2, "ESC para volver")
+                        if 'error_prof' in locals() and error_prof:
+                            interfaz.stdscr.attron(curses.color_pair(3))
+                            interfaz.stdscr.addstr(2, 2, "Profesional inválido. Opciones: Gisela, Marisol, Valentina.")
+                            interfaz.stdscr.attroff(curses.color_pair(3))
+                        interfaz.stdscr.move(3, 2)
+                        interfaz.stdscr.clrtoeol()
+                        interfaz.stdscr.refresh()
+                        curses.echo()
+                        buffer = b""
+                        while True:
+                            ch = interfaz.stdscr.getch(3, 2 + len(buffer))
+                            if ch == 27:
+                                curses.noecho()
+                                cancelar_filtro = True
+                                break
+                            elif ch in (10, 13):
+                                break
+                            elif ch in (8, 127):
+                                if buffer:
+                                    buffer = buffer[:-1]
+                                    interfaz.stdscr.move(3, 2 + len(buffer))
+                                    interfaz.stdscr.delch()
+                            else:
+                                buffer += bytes([ch])
+                                interfaz.stdscr.addch(3, 2 + len(buffer) - 1, ch)
+                        curses.noecho()
+                        if cancelar_filtro:
+                            break
+                        profesional = buffer.decode('utf-8').strip().lower()
+                        if profesional == "":
+                            profesional = None
+                            error_prof = False
+                            break
+                        if not profesional.replace(" ", "").isalpha() or profesional not in opciones_profesional:
+                            error_prof = True
+                            continue
+                        error_prof = False
+                        break
+                    if cancelar_filtro:
                         continue
                     filtrados = filtrar_turnos(turnos, servicio or None, profesional or None)
                     interfaz.mostrar_turnos(filtrados)
@@ -73,8 +160,32 @@ def main(stdscr):
                     except (ValueError, IndexError) as e:
                         interfaz.mostrar_mensaje(f"Error: {str(e)}", "error")
                 elif opcion_cliente == 3: 
-                    documento = interfaz.pedir_datos_con_esc("Ingrese su documento para cancelar el turno: ")
-                    if documento is None:
+                    while True:
+                        interfaz.stdscr.clear()
+                        prompt = "Ingrese su documento para cancelar el turno: "
+                        interfaz.stdscr.addstr(1, 2, prompt)
+                        interfaz.stdscr.addstr(interfaz.altura - 2, 2, "Presione ESC para volver")
+                        if 'error_doc' in locals() and error_doc:
+                            interfaz.stdscr.attron(curses.color_pair(3))
+                            interfaz.stdscr.addstr(3, 2, "El documento debe contener solo números.")
+                            interfaz.stdscr.attroff(curses.color_pair(3))
+                        interfaz.stdscr.move(2, 2)
+                        interfaz.stdscr.clrtoeol()
+                        interfaz.stdscr.refresh()
+                        curses.echo()
+                        documento = interfaz.stdscr.getstr(2, 2, 20).decode('utf-8').strip()
+                        curses.noecho()
+                        if documento == "":
+                            continue
+                        if documento == chr(27):  
+                            documento = None
+                            break
+                        if not documento.isdigit():
+                            error_doc = True
+                            continue
+                        error_doc = False
+                        break
+                    if documento is None or not documento.isdigit():
                         continue
                     nuevas_reservas = []
                     turno_recuperado = None
@@ -84,7 +195,6 @@ def main(stdscr):
                         else:
                             nuevas_reservas.append(r)
                     if turno_recuperado:
-
                         if interfaz.confirmar_cancelacion(turno_recuperado, documento):
                             turnos.append(turno_recuperado)
                             reservas = nuevas_reservas
@@ -111,7 +221,157 @@ def main(stdscr):
                     interfaz.mostrar_resumen_reservas(reservas)
                 elif opcion_manicurista == 1:  
                     interfaz.gestionar_reservas_pendientes(reservas)
-                elif opcion_manicurista == 2:  
+                elif opcion_manicurista == 2: 
+                    opciones_estado = ["pendiente", "atendido", "no asistió", "no asistio"]
+                    opciones_servicio = ["kapping", "semi", "soft gel"]
+                    opciones_profesional = ["gisela", "marisol", "valentina"]
+                    cancelar_filtro = False
+                   
+                    while True:
+                        interfaz.stdscr.clear()
+                        interfaz.stdscr.addstr(1, 2, "Filtrar por estado (Pendiente, Atendido, No asistió o ENTER): ")
+                        interfaz.stdscr.addstr(interfaz.altura - 2, 2, "ESC para volver")
+                        if 'error_estado' in locals() and error_estado:
+                            interfaz.stdscr.attron(curses.color_pair(3))
+                            interfaz.stdscr.addstr(2, 2, "Estado inválido. Opciones: Pendiente, Atendido, No asistió.")
+                            interfaz.stdscr.attroff(curses.color_pair(3))
+                        interfaz.stdscr.move(3, 2)
+                        interfaz.stdscr.clrtoeol()
+                        interfaz.stdscr.refresh()
+                        curses.echo()
+                        buffer = b""
+                        while True:
+                            ch = interfaz.stdscr.getch(3, 2 + len(buffer))
+                            if ch == 27:
+                                curses.noecho()
+                                cancelar_filtro = True
+                                break
+                            elif ch in (10, 13):
+                                break
+                            elif ch in (8, 127):
+                                if buffer:
+                                    buffer = buffer[:-1]
+                                    interfaz.stdscr.move(3, 2 + len(buffer))
+                                    interfaz.stdscr.delch()
+                            else:
+                                buffer += bytes([ch])
+                                interfaz.stdscr.addch(3, 2 + len(buffer) - 1, ch)
+                        curses.noecho()
+                        if cancelar_filtro:
+                            break
+                        estado = buffer.decode('utf-8').strip().lower()
+                        if estado == "":
+                            estado = None
+                            error_estado = False
+                            break
+                        if not estado.replace(" ", "").isalpha() or estado not in opciones_estado:
+                            error_estado = True
+                            continue
+                        error_estado = False
+                        break
+                    if cancelar_filtro:
+                        continue
+                    
+                    while True:
+                        interfaz.stdscr.clear()
+                        interfaz.stdscr.addstr(1, 2, "Filtrar por servicio (Kapping, Semi, Soft Gel o ENTER): ")
+                        interfaz.stdscr.addstr(interfaz.altura - 2, 2, "ESC para volver")
+                        if 'error_servicio' in locals() and error_servicio:
+                            interfaz.stdscr.attron(curses.color_pair(3))
+                            interfaz.stdscr.addstr(2, 2, "Servicio inválido. Opciones: Kapping, Semi, Soft Gel.")
+                            interfaz.stdscr.attroff(curses.color_pair(3))
+                        interfaz.stdscr.move(3, 2)
+                        interfaz.stdscr.clrtoeol()
+                        interfaz.stdscr.refresh()
+                        curses.echo()
+                        buffer = b""
+                        while True:
+                            ch = interfaz.stdscr.getch(3, 2 + len(buffer))
+                            if ch == 27:
+                                curses.noecho()
+                                cancelar_filtro = True
+                                break
+                            elif ch in (10, 13):
+                                break
+                            elif ch in (8, 127):
+                                if buffer:
+                                    buffer = buffer[:-1]
+                                    interfaz.stdscr.move(3, 2 + len(buffer))
+                                    interfaz.stdscr.delch()
+                            else:
+                                buffer += bytes([ch])
+                                interfaz.stdscr.addch(3, 2 + len(buffer) - 1, ch)
+                        curses.noecho()
+                        if cancelar_filtro:
+                            break
+                        servicio = buffer.decode('utf-8').strip().lower()
+                        if servicio == "":
+                            servicio = None
+                            error_servicio = False
+                            break
+                        if not servicio.replace(" ", "").isalpha() or servicio not in opciones_servicio:
+                            error_servicio = True
+                            continue
+                        error_servicio = False
+                        break
+                    if cancelar_filtro:
+                        continue
+                    
+                    while True:
+                        interfaz.stdscr.clear()
+                        interfaz.stdscr.addstr(1, 2, "Filtrar por profesional (Gisela, Marisol, Valentina o ENTER): ")
+                        interfaz.stdscr.addstr(interfaz.altura - 2, 2, "ESC para volver")
+                        if 'error_prof' in locals() and error_prof:
+                            interfaz.stdscr.attron(curses.color_pair(3))
+                            interfaz.stdscr.addstr(2, 2, "Profesional inválido. Opciones: Gisela, Marisol, Valentina.")
+                            interfaz.stdscr.attroff(curses.color_pair(3))
+                        interfaz.stdscr.move(3, 2)
+                        interfaz.stdscr.clrtoeol()
+                        interfaz.stdscr.refresh()
+                        curses.echo()
+                        buffer = b""
+                        while True:
+                            ch = interfaz.stdscr.getch(3, 2 + len(buffer))
+                            if ch == 27:
+                                curses.noecho()
+                                cancelar_filtro = True
+                                break
+                            elif ch in (10, 13):
+                                break
+                            elif ch in (8, 127):
+                                if buffer:
+                                    buffer = buffer[:-1]
+                                    interfaz.stdscr.move(3, 2 + len(buffer))
+                                    interfaz.stdscr.delch()
+                            else:
+                                buffer += bytes([ch])
+                                interfaz.stdscr.addch(3, 2 + len(buffer) - 1, ch)
+                        curses.noecho()
+                        if cancelar_filtro:
+                            break
+                        profesional = buffer.decode('utf-8').strip().lower()
+                        if profesional == "":
+                            profesional = None
+                            error_prof = False
+                            break
+                        if not profesional.replace(" ", "").isalpha() or profesional not in opciones_profesional:
+                            error_prof = True
+                            continue
+                        error_prof = False
+                        break
+                    if cancelar_filtro:
+                        continue
+                    def coincide(r):
+                        if estado and r.get('estado', 'Pendiente').lower() != estado:
+                            return False
+                        if servicio and r['turno']['servicio'].lower() != servicio:
+                            return False
+                        if profesional and r['turno']['profesional'].lower() != profesional:
+                            return False
+                        return True
+                    filtradas = sorted(filter(coincide, reservas), key=lambda r: (r['turno']['fecha_hora'][0], r['turno']['fecha_hora'][1]))
+                    interfaz.mostrar_lista_reservas_navegable(filtradas)
+                elif opcion_manicurista == 3:  
                     break
                 
         elif opcion == 2: 
