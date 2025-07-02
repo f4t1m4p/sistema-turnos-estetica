@@ -8,6 +8,9 @@ REM call venv\Scripts\activate
 REM Si necesitás instalar dependencias, descomenta la siguiente línea:
 REM pip install -r requirements.txt
 
+REM Instalar windows-curses si hace falta (solo en Windows)
+pip install windows-curses >nul 2>&1
+
 REM Ejecutar el sistema principal
 python main.py
 

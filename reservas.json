@@ -1,17 +1,1 @@
-[
-    {
-        "nombre": "lou",
-        "telefono": "2992",
-        "documento": "78",
-        "turno": {
-            "fecha_hora": [
-                "2025-01-27",
-                "12:00"
-            ],
-            "profesional": "Valentina",
-            "servicio": "Semi"
-        },
-        "estado": "No asistió",
-        "montoCobrado": null
-    }
-]
+[]
