@@ -172,8 +172,9 @@ class InterfazTurnos:
                     self.stdscr.move(2, 2 + len(buffer))
                     self.stdscr.delch()
             else:
-                buffer += bytes([ch])
-                self.stdscr.addch(2, 2 + len(buffer) - 1, ch)
+                if 0 <= ch <= 255:
+                    buffer += bytes([ch])
+                    self.stdscr.addch(2, 2 + len(buffer) - 1, ch)
         curses.noecho()
         return buffer.decode('utf-8')
 
@@ -320,19 +321,20 @@ class InterfazTurnos:
             buffer = b""
             while True:
                 ch = self.stdscr.getch(2, 2 + len(buffer))
-                if ch == 27:  # ESC
+                if ch == 27:  
                     curses.noecho()
                     return None
-                elif ch in (10, 13):  # ENTER
+                elif ch in (10, 13):  
                     break
-                elif ch in (8, 127):  # Backspace
+                elif ch in (8, 127):  
                     if buffer:
                         buffer = buffer[:-1]
                         self.stdscr.move(2, 2 + len(buffer))
                         self.stdscr.delch()
                 else:
-                    buffer += bytes([ch])
-                    self.stdscr.addch(2, 2 + len(buffer) - 1, ch)
+                    if 0 <= ch <= 255:
+                        buffer += bytes([ch])
+                        self.stdscr.addch(2, 2 + len(buffer) - 1, ch)
             curses.noecho()
             dni = buffer.decode('utf-8').strip()
             if dni == "":
@@ -653,7 +655,7 @@ class InterfazTurnos:
         from sistema_turnos.turnos import obtener_reservas_pendientes, actualizar_estado_reserva
         from sistema_turnos.datos import guardar_reservas
         
-        # Obtener reservas pendientes
+        
         reservas_pendientes = obtener_reservas_pendientes(reservas)
         
         if not reservas_pendientes:
@@ -768,8 +770,9 @@ class InterfazTurnos:
                         self.stdscr.move(y_op + 3, x_opciones + len(buffer))
                         self.stdscr.delch()
                 else:
-                    buffer += bytes([ch])
-                    self.stdscr.addch(y_op + 3, x_opciones + len(buffer) - 1, ch)
+                    if 0 <= ch <= 255:
+                        buffer += bytes([ch])
+                        self.stdscr.addch(y_op + 3, x_opciones + len(buffer) - 1, ch)
             curses.noecho()
             entrada = buffer.decode('utf-8').strip()
             if entrada == '':

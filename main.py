@@ -7,6 +7,27 @@ from sistema_turnos.interfaz import InterfazTurnos
 
 ENTORNO = os.getenv("ENTORNO", "desarrollo")
 
+def input_curses_utf8(stdscr, y, x, maxlen=50):
+    buffer = bytearray()
+    while True:
+        ch = stdscr.getch(y, x + len(buffer.decode('utf-8', errors='ignore')))
+        if ch == 27:  
+            return None
+        elif ch in (10, 13):  
+            break
+        elif ch in (8, 127):  
+            if buffer:
+                buffer = buffer[:-1]
+                stdscr.move(y, x + len(buffer.decode('utf-8', errors='ignore')))
+                stdscr.delch()
+        else:
+            buffer += bytes([ch])
+            try:
+                stdscr.addstr(y, x, buffer.decode('utf-8', errors='ignore'))
+            except Exception:
+                pass
+    return buffer.decode('utf-8', errors='ignore').strip()
+
 def main(stdscr):
     """
     Función principal del sistema.
@@ -33,7 +54,7 @@ def main(stdscr):
                     opciones_servicio = ["kapping", "semi", "soft gel"]
                     opciones_profesional = ["gisela", "marisol", "valentina"]
                     cancelar_filtro = False
-                    
+                
                     while True:
                         interfaz.stdscr.clear()
                         interfaz.stdscr.addstr(1, 2, "Filtrar por servicio (Kapping, Semi, Soft Gel o ENTER): ")
@@ -46,27 +67,12 @@ def main(stdscr):
                         interfaz.stdscr.clrtoeol()
                         interfaz.stdscr.refresh()
                         curses.echo()
-                        buffer = b""
-                        while True:
-                            ch = interfaz.stdscr.getch(3, 2 + len(buffer))
-                            if ch == 27:
-                                curses.noecho()
-                                cancelar_filtro = True
-                                break
-                            elif ch in (10, 13):
-                                break
-                            elif ch in (8, 127):
-                                if buffer:
-                                    buffer = buffer[:-1]
-                                    interfaz.stdscr.move(3, 2 + len(buffer))
-                                    interfaz.stdscr.delch()
-                            else:
-                                buffer += bytes([ch])
-                                interfaz.stdscr.addch(3, 2 + len(buffer) - 1, ch)
+                        servicio = input_curses_utf8(interfaz.stdscr, 3, 2, 50)
                         curses.noecho()
-                        if cancelar_filtro:
+                        if servicio is None:
+                            cancelar_filtro = True
                             break
-                        servicio = buffer.decode('utf-8').strip().lower()
+                        servicio = servicio.lower()
                         if servicio == "":
                             servicio = None
                             error_servicio = False
@@ -91,27 +97,12 @@ def main(stdscr):
                         interfaz.stdscr.clrtoeol()
                         interfaz.stdscr.refresh()
                         curses.echo()
-                        buffer = b""
-                        while True:
-                            ch = interfaz.stdscr.getch(3, 2 + len(buffer))
-                            if ch == 27:
-                                curses.noecho()
-                                cancelar_filtro = True
-                                break
-                            elif ch in (10, 13):
-                                break
-                            elif ch in (8, 127):
-                                if buffer:
-                                    buffer = buffer[:-1]
-                                    interfaz.stdscr.move(3, 2 + len(buffer))
-                                    interfaz.stdscr.delch()
-                            else:
-                                buffer += bytes([ch])
-                                interfaz.stdscr.addch(3, 2 + len(buffer) - 1, ch)
+                        profesional = input_curses_utf8(interfaz.stdscr, 3, 2, 50)
                         curses.noecho()
-                        if cancelar_filtro:
+                        if profesional is None:
+                            cancelar_filtro = True
                             break
-                        profesional = buffer.decode('utf-8').strip().lower()
+                        profesional = profesional.lower()
                         if profesional == "":
                             profesional = None
                             error_prof = False
@@ -173,13 +164,12 @@ def main(stdscr):
                         interfaz.stdscr.clrtoeol()
                         interfaz.stdscr.refresh()
                         curses.echo()
-                        documento = interfaz.stdscr.getstr(2, 2, 20).decode('utf-8').strip()
+                        documento = input_curses_utf8(interfaz.stdscr, 2, 2, 20)
                         curses.noecho()
+                        if documento is None:
+                            break
                         if documento == "":
                             continue
-                        if documento == chr(27):  
-                            documento = None
-                            break
                         if not documento.isdigit():
                             error_doc = True
                             continue
@@ -239,27 +229,12 @@ def main(stdscr):
                         interfaz.stdscr.clrtoeol()
                         interfaz.stdscr.refresh()
                         curses.echo()
-                        buffer = b""
-                        while True:
-                            ch = interfaz.stdscr.getch(3, 2 + len(buffer))
-                            if ch == 27:
-                                curses.noecho()
-                                cancelar_filtro = True
-                                break
-                            elif ch in (10, 13):
-                                break
-                            elif ch in (8, 127):
-                                if buffer:
-                                    buffer = buffer[:-1]
-                                    interfaz.stdscr.move(3, 2 + len(buffer))
-                                    interfaz.stdscr.delch()
-                            else:
-                                buffer += bytes([ch])
-                                interfaz.stdscr.addch(3, 2 + len(buffer) - 1, ch)
+                        estado = input_curses_utf8(interfaz.stdscr, 3, 2, 50)
                         curses.noecho()
-                        if cancelar_filtro:
+                        if estado is None:
+                            cancelar_filtro = True
                             break
-                        estado = buffer.decode('utf-8').strip().lower()
+                        estado = estado.lower()
                         if estado == "":
                             estado = None
                             error_estado = False
@@ -284,27 +259,12 @@ def main(stdscr):
                         interfaz.stdscr.clrtoeol()
                         interfaz.stdscr.refresh()
                         curses.echo()
-                        buffer = b""
-                        while True:
-                            ch = interfaz.stdscr.getch(3, 2 + len(buffer))
-                            if ch == 27:
-                                curses.noecho()
-                                cancelar_filtro = True
-                                break
-                            elif ch in (10, 13):
-                                break
-                            elif ch in (8, 127):
-                                if buffer:
-                                    buffer = buffer[:-1]
-                                    interfaz.stdscr.move(3, 2 + len(buffer))
-                                    interfaz.stdscr.delch()
-                            else:
-                                buffer += bytes([ch])
-                                interfaz.stdscr.addch(3, 2 + len(buffer) - 1, ch)
+                        servicio = input_curses_utf8(interfaz.stdscr, 3, 2, 50)
                         curses.noecho()
-                        if cancelar_filtro:
+                        if servicio is None:
+                            cancelar_filtro = True
                             break
-                        servicio = buffer.decode('utf-8').strip().lower()
+                        servicio = servicio.lower()
                         if servicio == "":
                             servicio = None
                             error_servicio = False
@@ -329,27 +289,12 @@ def main(stdscr):
                         interfaz.stdscr.clrtoeol()
                         interfaz.stdscr.refresh()
                         curses.echo()
-                        buffer = b""
-                        while True:
-                            ch = interfaz.stdscr.getch(3, 2 + len(buffer))
-                            if ch == 27:
-                                curses.noecho()
-                                cancelar_filtro = True
-                                break
-                            elif ch in (10, 13):
-                                break
-                            elif ch in (8, 127):
-                                if buffer:
-                                    buffer = buffer[:-1]
-                                    interfaz.stdscr.move(3, 2 + len(buffer))
-                                    interfaz.stdscr.delch()
-                            else:
-                                buffer += bytes([ch])
-                                interfaz.stdscr.addch(3, 2 + len(buffer) - 1, ch)
+                        profesional = input_curses_utf8(interfaz.stdscr, 3, 2, 50)
                         curses.noecho()
-                        if cancelar_filtro:
+                        if profesional is None:
+                            cancelar_filtro = True
                             break
-                        profesional = buffer.decode('utf-8').strip().lower()
+                        profesional = profesional.lower()
                         if profesional == "":
                             profesional = None
                             error_prof = False
