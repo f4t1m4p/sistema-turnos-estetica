@@ -4,9 +4,10 @@ import os
 import json
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sistema_turnos.clientes import validar_documento, validar_nombre
+from sistema_turnos.clientes import validar_documento, validar_nombre, pedir_documento_recursivo
 from sistema_turnos.datos import cargar_turnos, guardar_turnos, agregar_turno
 from sistema_turnos.turnos import filtrar_turnos, validar_fecha_hora
+from unittest.mock import patch
 
 def test_validar_documento_valido():
     """
@@ -106,3 +107,15 @@ def test_manejo_errores_archivo_inexistente():
     turnos = cargar_turnos()
     assert isinstance(turnos, list)
     assert len(turnos)>0
+    
+    
+def test_pedir_documento_recursivo_valido():
+    
+    with patch("builtins.input", return_value="12345678"):
+        assert pedir_documento_recursivo() == "12345678"
+
+def test_pedir_documento_recursivo_invalido_luego_valido():
+    with patch("builtins.input", side_effect=["abc", "87654321"]):
+        assert pedir_documento_recursivo() == "87654321"
+    
+    

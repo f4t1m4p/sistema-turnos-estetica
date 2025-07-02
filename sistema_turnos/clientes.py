@@ -1,5 +1,18 @@
 import re
 
+def pedir_documento_recursivo():
+    """
+    Valida que el documento sea válido usando recursividad.
+    Si el usuario ingresa un dato incorrecto, la función se llama a sí misma hasta que el dato sea válido.
+    Esto reemplaza el uso de bucles tradicionales y demuestra recursividad aplicada a validación de datos.
+    """
+    documento = input("Ingrese su documento: ")
+    if re.match(r'^\d+$', documento):
+        return documento
+    else:
+        print("El documento debe contener solo números. Intente de nuevo.")
+        return pedir_documento_recursivo()
+
 def validar_documento(documento):
     """
     Valida que el documento sea válido usando regex.
@@ -8,6 +21,8 @@ def validar_documento(documento):
         raise ValueError("El documento debe contener solo números")
     return documento
 
+
+
 def validar_nombre(nombre):
     """
     Valida que el nombre sea válido.
@@ -15,6 +30,8 @@ def validar_nombre(nombre):
     if not re.match(r'^[A-Za-z\s]+$', nombre):
         raise ValueError("El nombre solo debe contener letras y espacios")
     return nombre
+
+
 
 def ver_resumen_reservas(reservas, interfaz=None):
     """

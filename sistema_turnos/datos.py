@@ -155,3 +155,140 @@ def cargar_reservas():
     except Exception as e:
         logging.error(f"Error al cargar reservas: {str(e)}")
         return []
+
+def procesar_turnos_recursivo(turnos_a_procesar, turnos_procesados=None, intentos=0, max_intentos=3):
+    """
+    Procesa múltiples turnos de forma recursiva.
+    
+    Args:
+        turnos_a_procesar: Lista de turnos a procesar
+        turnos_procesados: Lista de turnos ya procesados (para recursión)
+        intentos: Número de intentos actuales
+        max_intentos: Número máximo de intentos permitidos
+    
+    Returns:
+        Lista de turnos procesados exitosamente
+    """
+    if turnos_procesados is None:
+        turnos_procesados = []
+    
+   
+    if not turnos_a_procesar:
+        return turnos_procesados
+    
+   
+    if intentos >= max_intentos:
+        logging.warning(f"Se alcanzó el máximo de {max_intentos} intentos al procesar turnos")
+        return turnos_procesados
+    
+    try:
+       
+        turno_actual = turnos_a_procesar[0]
+        turnos_restantes = turnos_a_procesar[1:]
+        
+        
+        agregar_turno(turno_actual)
+        turnos_procesados.append(turno_actual)
+        
+        logging.info(f"Turno procesado exitosamente: {turno_actual}")
+        
+        
+        return procesar_turnos_recursivo(turnos_restantes, turnos_procesados, 0, max_intentos)
+        
+    except Exception as e:
+        logging.error(f"Error procesando turno: {e}")
+       
+        return procesar_turnos_recursivo(turnos_a_procesar, turnos_procesados, intentos + 1, max_intentos)
+
+def procesar_reservas_recursivo(reservas_a_procesar, reservas_procesadas=None, intentos=0, max_intentos=3):
+    """
+    Procesa múltiples reservas de forma recursiva.
+    
+    Args:
+        reservas_a_procesar: Lista de reservas a procesar
+        reservas_procesadas: Lista de reservas ya procesadas (para recursión)
+        intentos: Número de intentos actuales
+        max_intentos: Número máximo de intentos permitidos
+    
+    Returns:
+        Lista de reservas procesadas exitosamente
+    """
+    if reservas_procesadas is None:
+        reservas_procesadas = []
+    
+    
+    if not reservas_a_procesar:
+        return reservas_procesadas
+    
+   
+    if intentos >= max_intentos:
+        logging.warning(f"Se alcanzó el máximo de {max_intentos} intentos al procesar reservas")
+        return reservas_procesadas
+    
+    try:
+       
+        reserva_actual = reservas_a_procesar[0]
+        reservas_restantes = reservas_a_procesar[1:]
+        
+       
+        reservas_existentes = cargar_reservas()
+        reservas_existentes.append(reserva_actual)
+        guardar_reservas(reservas_existentes)
+        
+        reservas_procesadas.append(reserva_actual)
+        
+        logging.info(f"Reserva procesada exitosamente: {reserva_actual['nombre']}")
+        
+       
+        return procesar_reservas_recursivo(reservas_restantes, reservas_procesadas, 0, max_intentos)
+        
+    except Exception as e:
+        logging.error(f"Error procesando reserva: {e}")
+       
+        return procesar_reservas_recursivo(reservas_a_procesar, reservas_procesadas, intentos + 1, max_intentos)
+
+def validar_turnos_existentes_recursivo(turnos, turnos_validados=None, indice=0):
+    """
+    Valida todos los turnos existentes de forma recursiva.
+    
+    Args:
+        turnos: Lista de turnos a validar
+        turnos_validados: Lista de turnos ya validados (para recursión)
+        indice: Índice actual del turno a validar
+    
+    Returns:
+        Lista de turnos validados
+    """
+    if turnos_validados is None:
+        turnos_validados = []
+    
+    
+    if indice >= len(turnos):
+        return turnos_validados
+    
+    try:
+        turno_actual = turnos[indice]
+        
+       
+        fecha, hora = turno_actual["fecha_hora"]
+        
+        
+        if not isinstance(fecha, str) or not isinstance(hora, str):
+            logging.warning(f"Turno {indice} tiene formato de fecha/hora inválido: {turno_actual}")
+          
+            return validar_turnos_existentes_recursivo(turnos, turnos_validados, indice + 1)
+       
+        if not turno_actual.get("profesional") or not turno_actual.get("servicio"):
+            logging.warning(f"Turno {indice} tiene datos incompletos: {turno_actual}")
+            
+            return validar_turnos_existentes_recursivo(turnos, turnos_validados, indice + 1)
+        
+       
+        turnos_validados.append(turno_actual)
+        logging.info(f"Turno {indice} validado exitosamente")
+        
+    except Exception as e:
+        logging.error(f"Error validando turno {indice}: {e}")
+    
+    
+    return validar_turnos_existentes_recursivo(turnos, turnos_validados, indice + 1)

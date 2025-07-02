@@ -23,6 +23,8 @@ def validar_fecha_hora(fecha, hora):
     
     return fecha, hora
 
+
+
 def mostrar_turnos(turnos):
     """
     Muestra los turnos disponibles.
