@@ -13,6 +13,15 @@ class InterfazTurnos:
     def __init__(self, stdscr):
         self.stdscr = stdscr
         self.altura, self.ancho = stdscr.getmaxyx()
+        
+        
+        self.tamanio_minimo_ancho = 80
+        self.tamanio_minimo_altura = 24
+        
+        if self.ancho < self.tamanio_minimo_ancho or self.altura < self.tamanio_minimo_altura:
+            self.mostrar_error_tamanio_pantalla()
+            return
+        
         curses.start_color()
         curses.init_pair(1, curses.COLOR_CYAN, curses.COLOR_BLACK)  
         curses.init_pair(2, curses.COLOR_MAGENTA, curses.COLOR_BLACK)  
@@ -22,15 +31,61 @@ class InterfazTurnos:
         
         self.stdscr.keypad(True) 
         curses.noecho()  
-        curses.cbreak() 
+        curses.cbreak()
+        
+        
+        curses.resize_term(self.altura, self.ancho)
+    
+    def mostrar_error_tamanio_pantalla(self):
+        """
+        Muestra un mensaje de error cuando la pantalla es muy pequeña.
+        """
+        self.stdscr.clear()
+        self.stdscr.addstr(1, 2, "ERROR: Pantalla muy pequeña")
+        self.stdscr.addstr(3, 2, f"Tamaño actual: {self.ancho}x{self.altura}")
+        self.stdscr.addstr(4, 2, f"Tamaño mínimo requerido: {self.tamanio_minimo_ancho}x{self.tamanio_minimo_altura}")
+        self.stdscr.addstr(6, 2, "Por favor:")
+        self.stdscr.addstr(7, 2, "1. Aumenta el tamaño de tu terminal")
+        self.stdscr.addstr(8, 2, "2. O usa una fuente más pequeña")
+        self.stdscr.addstr(9, 2, "3. O maximiza la ventana")
+        self.stdscr.addstr(11, 2, "Presiona cualquier tecla para salir...")
+        self.stdscr.refresh()
+        self.stdscr.getch()
+    
+    def verificar_tamanio_pantalla(self):
+        """
+        Verifica si el tamaño de pantalla sigue siendo válido.
+        """
+        nueva_altura, nuevo_ancho = self.stdscr.getmaxyx()
+        if nuevo_ancho != self.ancho or nueva_altura != self.altura:
+            self.altura, self.ancho = nueva_altura, nuevo_ancho
+            if self.ancho < self.tamanio_minimo_ancho or self.altura < self.tamanio_minimo_altura:
+                self.mostrar_error_tamanio_pantalla()
+                return False
+        return True
+    
+    def centrar_texto(self, texto, y, max_ancho=None):
+        """
+        Centra un texto en la pantalla de forma segura.
+        """
+        if max_ancho is None:
+            max_ancho = self.ancho - 4  
+        
+        texto_truncado = texto[:max_ancho] if len(texto) > max_ancho else texto
+        x = max(2, (self.ancho - len(texto_truncado)) // 2)
+        return x, texto_truncado 
 
     def mostrar_titulo(self, titulo):
         """
-        Muestra un título en la pantalla.
+        Muestra un título en la pantalla de forma segura.
         """
+        if not self.verificar_tamanio_pantalla():
+            return
+        
         self.stdscr.clear()
         self.stdscr.attron(curses.color_pair(1))
-        self.stdscr.addstr(1, (self.ancho - len(titulo)) // 2, titulo)
+        x, texto_seguro = self.centrar_texto(titulo, 1)
+        self.stdscr.addstr(1, x, texto_seguro)
         self.stdscr.attroff(curses.color_pair(1))
         self.stdscr.refresh()
 
@@ -44,8 +99,11 @@ class InterfazTurnos:
 
     def menu_seleccion(self, opciones, inicio_y):
         """
-        Maneja la selección en un menú.
+        Maneja la selección en un menú de forma segura.
         """
+        if not self.verificar_tamanio_pantalla():
+            return -1
+        
         seleccion = 0
         while True:
             self.stdscr.clear()
@@ -53,28 +111,46 @@ class InterfazTurnos:
             
             max_opciones = self.altura - inicio_y - 2
             if len(opciones) > max_opciones:
-                
-                pass
+                # Implementar scroll para muchas opciones
+                inicio = max(0, seleccion - max_opciones // 2)
+                fin = min(len(opciones), inicio + max_opciones)
+                opciones_vista = opciones[inicio:fin]
+                seleccion_vista = seleccion - inicio
+            else:
+                opciones_vista = opciones
+                seleccion_vista = seleccion
             
-           
-            for idx, opcion in enumerate(opciones):
+            
+            for idx, opcion in enumerate(opciones_vista):
                 y = inicio_y + idx
                 if y < self.altura - 1:  
                     try:
-                        if idx == seleccion:
+                        
+                        opcion_segura = opcion[:self.ancho - 4] if len(opcion) > self.ancho - 4 else opcion
+                        
+                        if idx == seleccion_vista:
                             self.stdscr.attron(curses.color_pair(2))
-                            self.stdscr.addstr(y, 2, f"> {opcion}")
+                            self.stdscr.addstr(y, 2, f"> {opcion_segura}")
                             self.stdscr.attroff(curses.color_pair(2))
                         else:
-                            self.stdscr.addstr(y, 2, f"  {opcion}")
+                            self.stdscr.addstr(y, 2, f"  {opcion_segura}")
                     except curses.error:
-                        # Si hay error al escribir, continuar
+                       
                         continue
+
+            
+            if len(opciones) > max_opciones:
+                self.stdscr.attron(curses.color_pair(4))
+                if inicio > 0:
+                    self.stdscr.addstr(self.altura - 3, 2, "↑ Más opciones arriba")
+                if fin < len(opciones):
+                    self.stdscr.addstr(self.altura - 3, self.ancho - 20, "Más opciones abajo ↓")
+                self.stdscr.attroff(curses.color_pair(4))
 
             self.stdscr.refresh()
             tecla = self.stdscr.getch()
 
-            # Manejar navegación
+            
             if tecla == curses.KEY_UP:
                 seleccion = max(0, seleccion - 1)
             elif tecla == curses.KEY_DOWN:
@@ -86,50 +162,107 @@ class InterfazTurnos:
 
     def mostrar_turnos(self, turnos):
         """
-        Muestra los turnos disponibles con colores.
+        Muestra los turnos disponibles con colores de forma segura.
         """
+        if not self.verificar_tamanio_pantalla():
+            return
+        
         self.stdscr.clear()
         
-        self.stdscr.attron(curses.color_pair(1))
-        self.stdscr.addstr(1, (self.ancho - len("TURNOS DISPONIBLES")) // 2, "TURNOS DISPONIBLES")
-        self.stdscr.attroff(curses.color_pair(1))
-        y = 3
-        for i, turno in enumerate(turnos):
-            if y < self.altura - 1:
-                fecha, hora = turno["fecha_hora"]
-                texto = f"{i + 1}. {fecha} {hora} - {turno['servicio']} con {turno['profesional']}"
-                self.stdscr.addstr(y, 2, texto)
-                y += 1
         
-        self.stdscr.move(self.altura - 2, 0)
-        self.stdscr.clrtoeol()
-        self.stdscr.attron(curses.color_pair(4))
-        self.stdscr.addstr(self.altura - 2, 2, "Presione ENTER para continuar...")
-        self.stdscr.attroff(curses.color_pair(4))
-        self.stdscr.refresh()
-        while True:
-            tecla = self.stdscr.getch()
-            if tecla == 10:  
-                break
+        self.stdscr.attron(curses.color_pair(1))
+        x, titulo_seguro = self.centrar_texto("TURNOS DISPONIBLES", 1)
+        self.stdscr.addstr(1, x, titulo_seguro)
+        self.stdscr.attroff(curses.color_pair(1))
+        
+        
+        y = 3
+        max_turnos_por_pantalla = self.altura - 5  
+        
+        if len(turnos) > max_turnos_por_pantalla:
+            
+            inicio = 0
+            while True:
+                self.stdscr.clear()
+                self.stdscr.attron(curses.color_pair(1))
+                x, titulo_seguro = self.centrar_texto("TURNOS DISPONIBLES", 1)
+                self.stdscr.addstr(1, x, titulo_seguro)
+                self.stdscr.attroff(curses.color_pair(1))
+                
+                y = 3
+                for i in range(inicio, min(inicio + max_turnos_por_pantalla, len(turnos))):
+                    if y < self.altura - 3:
+                        turno = turnos[i]
+                        fecha, hora = turno["fecha_hora"]
+                        texto = f"{i + 1}. {fecha} {hora} - {turno['servicio']} con {turno['profesional']}"
+                        
+                        texto_seguro = texto[:self.ancho - 4] if len(texto) > self.ancho - 4 else texto
+                        self.stdscr.addstr(y, 2, texto_seguro)
+                        y += 1
+                
+                
+                self.stdscr.attron(curses.color_pair(4))
+                if inicio > 0:
+                    self.stdscr.addstr(self.altura - 3, 2, "↑ Anterior")
+                if inicio + max_turnos_por_pantalla < len(turnos):
+                    self.stdscr.addstr(self.altura - 3, self.ancho - 12, "Siguiente ↓")
+                self.stdscr.addstr(self.altura - 2, 2, "ENTER para continuar, ↑↓ para navegar")
+                self.stdscr.attroff(curses.color_pair(4))
+                
+                self.stdscr.refresh()
+                tecla = self.stdscr.getch()
+                
+                if tecla == 10:  
+                    break
+                elif tecla == curses.KEY_UP and inicio > 0:
+                    inicio = max(0, inicio - 1)
+                elif tecla == curses.KEY_DOWN and inicio + max_turnos_por_pantalla < len(turnos):
+                    inicio = min(len(turnos) - max_turnos_por_pantalla, inicio + 1)
+        else:
+            
+            for i, turno in enumerate(turnos):
+                if y < self.altura - 3:
+                    fecha, hora = turno["fecha_hora"]
+                    texto = f"{i + 1}. {fecha} {hora} - {turno['servicio']} con {turno['profesional']}"
+                    
+                    texto_seguro = texto[:self.ancho - 4] if len(texto) > self.ancho - 4 else texto
+                    self.stdscr.addstr(y, 2, texto_seguro)
+                    y += 1
+            
+            self.stdscr.attron(curses.color_pair(4))
+            self.stdscr.addstr(self.altura - 2, 2, "Presione ENTER para continuar...")
+            self.stdscr.attroff(curses.color_pair(4))
+            self.stdscr.refresh()
+            while True:
+                tecla = self.stdscr.getch()
+                if tecla == 10:  
+                    break
 
     def mostrar_mensaje(self, mensaje, tipo="info"):
         """
-        Muestra un mensaje al usuario y espera ENTER para continuar.
+        Muestra un mensaje al usuario y espera ENTER para continuar de forma segura.
         """
+        if not self.verificar_tamanio_pantalla():
+            return
+        
         self.stdscr.clear()
         color = {
             "error": 3,
             "info": 4,
             "exito": 2
         }.get(tipo, 4)
+        
+       
+        x, mensaje_seguro = self.centrar_texto(mensaje, self.altura // 2)
         self.stdscr.attron(curses.color_pair(color))
-        self.stdscr.addstr(self.altura // 2, (self.ancho - len(mensaje)) // 2, mensaje)
+        self.stdscr.addstr(self.altura // 2, x, mensaje_seguro)
         self.stdscr.attroff(curses.color_pair(color))
     
         texto_enter = "Presione ENTER para volver al inicio..."
         if mensaje.strip() != "Gracias por usar el sistema de turnos. ¡Hasta luego!":
             self.stdscr.attron(curses.A_DIM)
-            self.stdscr.addstr(self.altura // 2 + 2, (self.ancho - len(texto_enter)) // 2, texto_enter)
+            x_enter, texto_enter_seguro = self.centrar_texto(texto_enter, self.altura // 2 + 2)
+            self.stdscr.addstr(self.altura // 2 + 2, x_enter, texto_enter_seguro)
             self.stdscr.attroff(curses.A_DIM)
         self.stdscr.refresh()
         while True:

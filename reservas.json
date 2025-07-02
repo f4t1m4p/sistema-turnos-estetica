@@ -28,5 +28,20 @@
         },
         "estado": "Pendiente",
         "montoCobrado": null
+    },
+    {
+        "nombre": "ds",
+        "telefono": "123",
+        "documento": "12",
+        "turno": {
+            "fecha_hora": [
+                "2025-01-27",
+                "18:30"
+            ],
+            "profesional": "Gisela",
+            "servicio": "Kapping"
+        },
+        "estado": "Pendiente",
+        "montoCobrado": null
     }
 ]
