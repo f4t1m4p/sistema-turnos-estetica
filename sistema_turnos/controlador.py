@@ -25,11 +25,11 @@ class ControladorTurnos:
         while True:
             opcion = self.interfaz.mostrar_menu_principal()
             
-            if opcion == 0:  # Cliente
+            if opcion == 0:  
                 self.ejecutar_menu_cliente()
-            elif opcion == 1:  # Manicurista
+            elif opcion == 1:  
                 self.ejecutar_menu_manicurista()
-            elif opcion == 2:  # Salir
+            elif opcion == 2:  
                 self.interfaz.mostrar_mensaje("Gracias por usar el sistema de turnos. ¡Hasta luego!")
                 break
     

@@ -110,11 +110,16 @@ def test_manejo_errores_archivo_inexistente():
     
     
 def test_pedir_documento_recursivo_valido():
-    
+    """
+    Prueba la función recursiva pidiendo un documento válido a la primera.
+    """
     with patch("builtins.input", return_value="12345678"):
         assert pedir_documento_recursivo() == "12345678"
 
 def test_pedir_documento_recursivo_invalido_luego_valido():
+    """
+    Prueba la función recursiva simulando un ingreso inválido y luego uno válido.
+    """
     with patch("builtins.input", side_effect=["abc", "87654321"]):
         assert pedir_documento_recursivo() == "87654321"
     
