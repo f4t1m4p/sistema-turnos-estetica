@@ -1,20 +1,5 @@
 [
     {
-        "nombre": "ds",
-        "telefono": "123",
-        "documento": "12",
-        "turno": {
-            "fecha_hora": [
-                "2025-01-27",
-                "18:30"
-            ],
-            "profesional": "Gisela",
-            "servicio": "Kapping"
-        },
-        "estado": "Pendiente",
-        "montoCobrado": null
-    },
-    {
         "nombre": "lou",
         "telefono": "2992",
         "documento": "78",
@@ -26,7 +11,7 @@
             "profesional": "Valentina",
             "servicio": "Semi"
         },
-        "estado": "Pendiente",
+        "estado": "No asistió",
         "montoCobrado": null
     }
 ]

@@ -399,7 +399,7 @@ class ControladorTurnos:
         buffer = bytearray()
         while True:
             ch = self.interfaz.stdscr.getch(y, x + len(buffer.decode('utf-8', errors='ignore')))
-            if ch == 27:  # ESC
+            if ch == 27: 
                 return None
             elif ch in (10, 13):  
                 break
@@ -409,9 +409,12 @@ class ControladorTurnos:
                     self.interfaz.stdscr.move(y, x + len(buffer.decode('utf-8', errors='ignore')))
                     self.interfaz.stdscr.delch()
             else:
-                buffer += bytes([ch])
-                try:
-                    self.interfaz.stdscr.addstr(y, x, buffer.decode('utf-8', errors='ignore'))
-                except Exception:
-                    pass
+                
+                if 0 <= ch <= 255:
+                    buffer += bytes([ch])
+                    try:
+                        self.interfaz.stdscr.addstr(y, x, buffer.decode('utf-8', errors='ignore'))
+                    except Exception:
+                        pass
+                
         return buffer.decode('utf-8', errors='ignore').strip() 
