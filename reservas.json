@@ -1,1 +1,17 @@
-[]
+[
+    {
+        "nombre": "fati",
+        "telefono": "2227584761",
+        "documento": "46113226",
+        "turno": {
+            "fecha_hora": [
+                "2025-07-02",
+                "09:00"
+            ],
+            "profesional": "Gisela",
+            "servicio": "Kapping"
+        },
+        "estado": "Atendido",
+        "montoCobrado": 15000.0
+    }
+]

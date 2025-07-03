@@ -441,49 +441,10 @@ class InterfazTurnos:
                 return  
             elif tecla == 10:
                 return 'menu'  
-    def mostrar_turnos_reservados(self, reservas):
+    def mostrar_turnos_reservados(self, reservas, dni):
         """
-        Pide DNI y muestra los turnos reservados para ese documento. Permite volver con ESC.
+        Muestra los turnos reservados para el documento dado. Permite volver con ESC.
         """
-        while True:
-            self.stdscr.clear()
-            prompt = "Ingrese su DNI para ver sus turnos reservados:"
-            self.stdscr.addstr(1, 2, prompt)
-            self.stdscr.addstr(self.altura - 2, 2, "Presione ESC para volver")
-            if 'error_dni' in locals() and error_dni:
-                self.stdscr.attron(curses.color_pair(3))
-                self.stdscr.addstr(3, 2, "El DNI debe contener solo números.")
-                self.stdscr.attroff(curses.color_pair(3))
-            self.stdscr.move(2, 2)
-            self.stdscr.clrtoeol()
-            self.stdscr.refresh()
-            curses.echo()
-            buffer = b""
-            while True:
-                ch = self.stdscr.getch(2, 2 + len(buffer))
-                if ch == 27:  
-                    curses.noecho()
-                    return None
-                elif ch in (10, 13):  
-                    break
-                elif ch in (8, 127):  
-                    if buffer:
-                        buffer = buffer[:-1]
-                        self.stdscr.move(2, 2 + len(buffer))
-                        self.stdscr.delch()
-                else:
-                    if 0 <= ch <= 255:
-                        buffer += bytes([ch])
-                        self.stdscr.addch(2, 2 + len(buffer) - 1, ch)
-            curses.noecho()
-            dni = buffer.decode('utf-8').strip()
-            if dni == "":
-                continue
-            if not dni.isdigit():
-                error_dni = True
-                continue
-            error_dni = False
-            break
         self.stdscr.clear()
         self.stdscr.addstr(1, (self.ancho - len("MIS TURNOS RESERVADOS")) // 2, "MIS TURNOS RESERVADOS")
         y = 4
@@ -503,30 +464,23 @@ class InterfazTurnos:
         for r in reservas:
             if r["documento"].strip().lower() == dni.strip().lower():
                 fecha, hora = r["turno"]["fecha_hora"]
-               
                 estado = r.get("estado", "Pendiente")
                 monto = r.get("montoCobrado")
-                
                 texto = f"- {fecha} {hora} - {r['turno']['servicio']} con {r['turno']['profesional']}"
                 self.stdscr.addstr(y, 2, texto)
                 y += 1
-                
-                
                 if y < self.altura - 1:
                     estado_texto = f"  Estado: {estado}"
                     if estado == "Atendido" and monto is not None:
                         estado_texto += f" - Monto cobrado: ${monto:.2f}"
                     elif estado == "No asistió":
                         estado_texto += " - No asistió"
-                    
-                    
                     if estado == "Atendido":
                         self.stdscr.attron(curses.color_pair(2)) 
                     elif estado == "No asistió":
                         self.stdscr.attron(curses.color_pair(3))  
                     else:
                         self.stdscr.attron(curses.color_pair(4)) 
-                    
                     self.stdscr.addstr(y, 4, estado_texto)
                     self.stdscr.attroff(curses.color_pair(2) | curses.color_pair(3) | curses.color_pair(4))
                     y += 1

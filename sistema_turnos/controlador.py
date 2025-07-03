@@ -303,7 +303,7 @@ class ControladorTurnos:
         reservas_cliente = [r for r in self.reservas if coincide(r)]
         
         if reservas_cliente:
-            self.interfaz.mostrar_turnos_reservados(reservas_cliente)
+            self.interfaz.mostrar_turnos_reservados(reservas_cliente, documento)
         else:
             self.interfaz.mostrar_mensaje("No se encontraron reservas con ese documento.", "info")
     
