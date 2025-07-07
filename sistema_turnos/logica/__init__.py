@@ -1,0 +1,1 @@
+# Módulo lógica - Reglas de negocio y operaciones 

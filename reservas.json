@@ -1,17 +1,62 @@
 [
     {
-        "nombre": "fati",
+        "nombre": "maga",
         "telefono": "2227584761",
-        "documento": "46113226",
+        "documento": "78787878",
+        "turno": {
+            "fecha_hora": [
+                "2025-07-01",
+                "13:30"
+            ],
+            "profesional": "Marisol",
+            "servicio": "Semi"
+        },
+        "estado": "No asistió",
+        "montoCobrado": null
+    },
+    {
+        "nombre": "mam",
+        "telefono": "123456789123",
+        "documento": "1234567",
         "turno": {
             "fecha_hora": [
                 "2025-07-02",
-                "09:00"
+                "10:30"
             ],
-            "profesional": "Gisela",
+            "profesional": "Valentina",
             "servicio": "Kapping"
         },
-        "estado": "Atendido",
-        "montoCobrado": 15000.0
+        "estado": "Atendida",
+        "montoCobrado": 2000.0
+    },
+    {
+        "nombre": "pali",
+        "telefono": "1212121212",
+        "documento": "46113258",
+        "turno": {
+            "fecha_hora": [
+                "2025-07-02",
+                "12:00"
+            ],
+            "profesional": "Marisol",
+            "servicio": "Soft Gel"
+        },
+        "estado": "Pendiente",
+        "montoCobrado": null
+    },
+    {
+        "nombre": "gui",
+        "telefono": "1111111111",
+        "documento": "46113369",
+        "turno": {
+            "fecha_hora": [
+                "2025-07-03",
+                "09:00"
+            ],
+            "profesional": "Valentina",
+            "servicio": "Semi"
+        },
+        "estado": "Atendida",
+        "montoCobrado": 23000.0
     }
 ]

@@ -1,38 +1,6 @@
 [
     {
         "fecha_hora": [
-            "2025-07-01",
-            "09:00"
-        ],
-        "profesional": "Marisol",
-        "servicio": "Kapping"
-    },
-    {
-        "fecha_hora": [
-            "2025-07-01",
-            "13:30"
-        ],
-        "profesional": "Marisol",
-        "servicio": "Semi"
-    },
-    {
-        "fecha_hora": [
-            "2025-07-02",
-            "10:30"
-        ],
-        "profesional": "Valentina",
-        "servicio": "Kapping"
-    },
-    {
-        "fecha_hora": [
-            "2025-07-02",
-            "12:00"
-        ],
-        "profesional": "Marisol",
-        "servicio": "Soft Gel"
-    },
-    {
-        "fecha_hora": [
             "2025-07-02",
             "13:30"
         ],
@@ -42,14 +10,6 @@
     {
         "fecha_hora": [
             "2025-07-03",
-            "09:00"
-        ],
-        "profesional": "Valentina",
-        "servicio": "Semi"
-    },
-    {
-        "fecha_hora": [
-            "2025-07-03",
             "10:30"
         ],
         "profesional": "Marisol",
@@ -150,5 +110,21 @@
         ],
         "profesional": "Valentina",
         "servicio": "Soft Gel"
+    },
+    {
+        "fecha_hora": [
+            "2025-07-02",
+            "09:00"
+        ],
+        "profesional": "Gisela",
+        "servicio": "Kapping"
+    },
+    {
+        "fecha_hora": [
+            "2025-07-01",
+            "09:00"
+        ],
+        "profesional": "Marisol",
+        "servicio": "Kapping"
     }
 ]
