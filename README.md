@@ -66,28 +66,8 @@ AlgoritmosJueves/
 - **`utils/validaciones.py`**: Validación de datos de entrada
 - **`utils/filtros.py`**: Filtrado de información
 
-## Ventajas de la Nueva Estructura
 
-### 1. Separación de Responsabilidades
-- **Interfaz**: Solo presentación y entrada de datos
-- **Lógica**: Reglas de negocio puras
-- **Datos**: Persistencia y acceso a datos
-- **Controladores**: Coordinación entre capas
 
-### 2. Mantenibilidad
-- Código organizado por funcionalidad
-- Fácil localización de funciones
-- Reducción de acoplamiento
-
-### 3. Escalabilidad
-- Fácil agregar nuevas funcionalidades
-- Módulos independientes
-- Reutilización de código
-
-### 4. Testabilidad
-- Funciones puras en lógica de negocio
-- Separación clara de responsabilidades
-- Fácil mockeo de dependencias
 
 ## Funcionalidades Principales
 
@@ -111,6 +91,9 @@ AlgoritmosJueves/
 # Ejecutar el sistema
 python main.py
 
+# Pruebas 
+pytest
+
 # O usar el batch file en Windows
 iniciar_sistema.bat
 ```
@@ -120,7 +103,7 @@ iniciar_sistema.bat
 - `reservas.json`: Reservas realizadas
 - `sistema_turnos.log`: Log del sistema
 
-## Notas de Desarrollo
+## Notas 
 - El sistema usa curses para interfaz de terminal
 - Requiere terminal de mínimo 80x24 caracteres
 - Compatible con Windows, Linux y macOS 
