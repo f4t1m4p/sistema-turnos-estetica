@@ -58,5 +58,20 @@
         },
         "estado": "Atendida",
         "montoCobrado": 23000.0
+    },
+    {
+        "nombre": "mia",
+        "telefono": "2227584761",
+        "documento": "46113247",
+        "turno": {
+            "fecha_hora": [
+                "2025-07-03",
+                "13:30"
+            ],
+            "profesional": "Valentina",
+            "servicio": "Kapping"
+        },
+        "estado": "Atendida",
+        "montoCobrado": 15000.0
     }
 ]
