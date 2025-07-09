@@ -3,7 +3,9 @@ Módulo de lógica de negocio para reservas.
 Contiene las reglas de negocio para gestionar reservas de turnos.
 """
 
-from sistema_turnos.utils.validaciones import validar_documento, validar_telefono, validar_nombre
+from sistema_turnos.utils.validaciones import (
+    validar_documento, validar_telefono, validar_nombre
+)
 from sistema_turnos.utils.filtros import filtrar_reservas_por_dni
 from sistema_turnos.datos.persistencia import guardar_reservas, guardar_turnos
 

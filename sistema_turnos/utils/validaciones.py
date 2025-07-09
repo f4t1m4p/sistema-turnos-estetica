@@ -5,56 +5,29 @@ Contiene funciones para validar documentos, datos de entrada, etc.
 
 import re
 
-def validar_documento(documento):
+def validar_documento_recursivo(documento, posicion=0):
     """
-    Valida que el documento tenga el formato correcto (DNI argentino).
-    FUNCIONALIDAD: Asegurar que los datos ingresados sean correctos
+    Valida que el documento tenga el formato correcto (DNI argentino) usando recursividad.
+    FUNCIONALIDAD: Asegurar que los datos ingresados sean correctos usando recursividad
+    RECURSIVIDAD: Reemplaza bucles tradicionales por llamadas recursivas
     """
     if not documento:
         raise ValueError("El documento no puede estar vacío")
     
-    # Remover espacios y convertir a minúsculas
-    documento = documento.strip().lower()
+    # Caso base: si llegamos al final del documento
+    if posicion >= len(documento):
+        # Verificar que tenga entre 7 y 8 dígitos
+        if len(documento) < 7 or len(documento) > 8:
+            raise ValueError("El documento debe tener 7 u 8 dígitos numéricos")
+        return documento
     
-    # Validar formato de DNI argentino (7-8 dígitos)
-    if not re.match(r'^\d{7,8}$', documento):
-        raise ValueError("El documento debe tener 7 u 8 dígitos numéricos")
+    # Remover espacios y convertir a minúsculas en la primera llamada
+    if posicion == 0:
+        documento = documento.strip().lower()
     
-    return documento
-
-def validar_telefono(telefono):
-    """
-    Valida que el teléfono tenga el formato correcto.
-    FUNCIONALIDAD: Asegurar que los datos ingresados sean correctos
-    """
-    if not telefono:
-        raise ValueError("El teléfono no puede estar vacío")
+    # Validar que el carácter en la posición actual sea un dígito
+    if not documento[posicion].isdigit():
+        raise ValueError(f"El carácter en la posición {posicion + 1} debe ser un dígito")
     
-    # Remover espacios y caracteres especiales
-    telefono = re.sub(r'[^\d]', '', telefono)
-    
-    # Validar que tenga entre 10 y 15 dígitos
-    if len(telefono) < 10 or len(telefono) > 15:
-        raise ValueError("El teléfono debe tener entre 10 y 15 dígitos")
-    
-    return telefono
-
-def validar_nombre(nombre):
-    """
-    Valida que el nombre tenga el formato correcto.
-    FUNCIONALIDAD: Asegurar que los datos ingresados sean correctos
-    """
-    if not nombre:
-        raise ValueError("El nombre no puede estar vacío")
-    
-    # Remover espacios extra y capitalizar
-    nombre = ' '.join(nombre.strip().split())
-    
-    # Validar que solo contenga letras y espacios
-    if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', nombre):
-        raise ValueError("El nombre solo puede contener letras y espacios")
-    
-    if len(nombre) < 2:
-        raise ValueError("El nombre debe tener al menos 2 caracteres")
-    
-    return nombre.title() 
+    # Llamada recursiva para validar el siguiente carácter
+    return validar_documento_recursivo(documento, posicion + 1) 
