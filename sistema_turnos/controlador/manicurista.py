@@ -21,10 +21,15 @@ class ControladorManicurista:
     
     def mostrar_resumen_reservas(self):
         """
-        Muestra un resumen de todas las reservas.
-        FUNCIONALIDAD: Ver estado general de reservas
+        Muestra un resumen de todas las reservas y permite seleccionar una para ver detalles.
+        FUNCIONALIDAD: Ver estado general de reservas y detalles específicos
         """
-        self.interfaz.mostrar_resumen_reservas(self.reservas)
+        # Mostrar resumen navegable y permitir selección
+        reserva_seleccionada = self.interfaz.mostrar_resumen_reservas(self.reservas)
+        
+        if reserva_seleccionada is not None:
+            # Mostrar detalles de la reserva seleccionada
+            self.interfaz.mostrar_detalles_reserva(reserva_seleccionada)
     
     def gestionar_reservas_pendientes(self):
         """

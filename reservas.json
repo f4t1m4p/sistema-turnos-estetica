@@ -1,77 +1,17 @@
 [
     {
-        "nombre": "maga",
+        "nombre": "gui",
         "telefono": "2227584761",
-        "documento": "78787878",
+        "documento": "46113227",
         "turno": {
             "fecha_hora": [
-                "2025-07-01",
-                "13:30"
-            ],
-            "profesional": "Marisol",
-            "servicio": "Semi"
-        },
-        "estado": "No asistió",
-        "montoCobrado": null
-    },
-    {
-        "nombre": "mam",
-        "telefono": "123456789123",
-        "documento": "1234567",
-        "turno": {
-            "fecha_hora": [
-                "2025-07-02",
+                "2025-07-15",
                 "10:30"
             ],
             "profesional": "Valentina",
             "servicio": "Kapping"
         },
-        "estado": "Atendida",
-        "montoCobrado": 2000.0
-    },
-    {
-        "nombre": "pali",
-        "telefono": "1212121212",
-        "documento": "46113258",
-        "turno": {
-            "fecha_hora": [
-                "2025-07-02",
-                "12:00"
-            ],
-            "profesional": "Marisol",
-            "servicio": "Soft Gel"
-        },
-        "estado": "Pendiente",
+        "estado": "No asistió",
         "montoCobrado": null
-    },
-    {
-        "nombre": "gui",
-        "telefono": "1111111111",
-        "documento": "46113369",
-        "turno": {
-            "fecha_hora": [
-                "2025-07-03",
-                "09:00"
-            ],
-            "profesional": "Valentina",
-            "servicio": "Semi"
-        },
-        "estado": "Atendida",
-        "montoCobrado": 23000.0
-    },
-    {
-        "nombre": "mia",
-        "telefono": "2227584761",
-        "documento": "46113247",
-        "turno": {
-            "fecha_hora": [
-                "2025-07-03",
-                "13:30"
-            ],
-            "profesional": "Valentina",
-            "servicio": "Kapping"
-        },
-        "estado": "Atendida",
-        "montoCobrado": 15000.0
     }
 ]

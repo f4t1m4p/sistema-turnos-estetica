@@ -14,24 +14,38 @@ def confirmar_reserva(turno, nombre, telefono, documento):
     Valida y confirma una reserva de turno.
     FUNCIONALIDAD: Validar datos antes de confirmar una reserva
     """
+    # Validar cada campo por separado para dar mensajes más específicos
     try:
-        # Validar todos los datos
         nombre_valido = validar_nombre(nombre)
-        telefono_valido = validar_telefono(telefono)
-        documento_valido = validar_documento(documento)
-        
-        return {
-            "turno": turno,
-            "nombre": nombre_valido,
-            "telefono": telefono_valido,
-            "documento": documento_valido,
-            "valido": True
-        }
     except ValueError as e:
         return {
             "valido": False,
-            "error": str(e)
+            "error": f"Error en el nombre: {str(e)}"
         }
+    
+    try:
+        telefono_valido = validar_telefono(telefono)
+    except ValueError as e:
+        return {
+            "valido": False,
+            "error": f"Error en el teléfono: {str(e)}"
+        }
+    
+    try:
+        documento_valido = validar_documento(documento)
+    except ValueError as e:
+        return {
+            "valido": False,
+            "error": f"Error en el DNI: {str(e)}"
+        }
+    
+    return {
+        "turno": turno,
+        "nombre": nombre_valido,
+        "telefono": telefono_valido,
+        "documento": documento_valido,
+        "valido": True
+    }
 
 def crear_reserva(turno, nombre, telefono, documento, reservas):
     """

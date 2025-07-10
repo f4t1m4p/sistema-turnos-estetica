@@ -117,34 +117,81 @@ class InterfazTurnos:
     
     def mostrar_resumen_reservas(self, reservas):
         """
-        Muestra un resumen de las reservas agrupadas por profesional.
+        Muestra un resumen de las reservas agrupadas por profesional y permite seleccionar una.
+        Devuelve la reserva seleccionada o None si cancela.
         """
-        self.stdscr.clear()
-        self.stdscr.addstr(1, (self.ancho - len("RESUMEN DE RESERVAS")) // 2, "RESUMEN DE RESERVAS")
-        y = 3
+        if not reservas:
+            self.mostrar_mensaje("No hay reservas para mostrar.", "info")
+            return None
+        
+        # Agrupar reservas por profesional usando setdefault()
         profesionales = {}
         for r in reservas:
             profesional = r["turno"]["profesional"].capitalize()
             profesionales.setdefault(profesional, []).append(r)
-        for profesional, reservas_prof in profesionales.items():
-            self.stdscr.attron(curses.color_pair(1))
-            self.stdscr.addstr(y, 2, f"{profesional} ({len(reservas_prof)} reservas)")
-            self.stdscr.attroff(curses.color_pair(1))
-            y += 1
-            for r in reservas_prof:
-                fecha, hora = r["turno"]["fecha_hora"]
-                estado = r.get("estado", "Pendiente")
-                texto = f"- {fecha} {hora} - {r['turno']['servicio']} ({estado})"
-                self.stdscr.addstr(y, 4, texto)
-                y += 1
-            y += 1
-        self.stdscr.attron(curses.color_pair(4))
-        self.stdscr.addstr(self.altura - 2, 2, "Presione ESC para volver")
-        self.stdscr.attroff(curses.color_pair(4))
-        self.stdscr.refresh()
+        
+        # Usar conjunto para obtener servicios únicos sin repeticiones
+        servicios_unicos = set()
+        for r in reservas:
+            servicios_unicos.add(r["turno"]["servicio"])
+        
+        seleccion = 0
         while True:
+            self.stdscr.clear()
+            self.stdscr.addstr(1, (self.ancho - len("RESUMEN DE RESERVAS")) // 2, "RESUMEN DE RESERVAS")
+            y = 3
+            max_lineas = self.altura - 5
+            visibles = []  # Lista de reservas en el orden visual
+            
+            # Mostrar estadísticas usando conjuntos
+            self.stdscr.attron(curses.color_pair(2))
+            self.stdscr.addstr(y, 2, f"Servicios disponibles: {', '.join(sorted(servicios_unicos))}")
+            self.stdscr.attroff(curses.color_pair(2))
+            y += 2
+            
+            # Construir la lista de reservas visibles y pintar usando .items()
+            for profesional, reservas_prof in profesionales.items():
+                if y >= max_lineas + 3:
+                    break
+                self.stdscr.attron(curses.color_pair(1))
+                self.stdscr.addstr(y, 2, f"{profesional} ({len(reservas_prof)} reservas)")
+                self.stdscr.attroff(curses.color_pair(1))
+                y += 1
+                for r in reservas_prof:
+                    if y >= max_lineas + 3:
+                        break
+                    # Usar tupla para fecha y hora
+                    fecha, hora = r["turno"]["fecha_hora"]
+                    estado = r.get("estado", "Pendiente")
+                    monto = r.get("montoCobrado")
+                    texto = f"- {fecha} {hora} - {r['turno']['servicio']} - {r['nombre']} ({estado})"
+                    if monto is not None:
+                        texto += f" - ${monto:.2f}"
+                    visibles.append(r)
+                    idx_visual = len(visibles) - 1
+                    if idx_visual == seleccion:
+                        self.stdscr.attron(curses.color_pair(2))
+                        self.stdscr.addstr(y, 2, texto[:self.ancho-4])
+                        self.stdscr.attroff(curses.color_pair(2))
+                    else:
+                        self.stdscr.addstr(y, 2, texto[:self.ancho-4])
+                    y += 1
+                if y < max_lineas + 3:
+                    y += 1  # Espacio entre profesionales
+            
+            self.stdscr.attron(curses.color_pair(4))
+            self.stdscr.addstr(self.altura - 3, 2, f"↑↓ para navegar ({seleccion+1}/{len(visibles)}), ENTER para ver detalles, ESC para volver")
+            self.stdscr.attroff(curses.color_pair(4))
+            self.stdscr.refresh()
+            
             tecla = self.stdscr.getch()
-            if tecla == 27 or tecla == 10:
+            if tecla == curses.KEY_UP and seleccion > 0:
+                seleccion -= 1
+            elif tecla == curses.KEY_DOWN and seleccion < len(visibles) - 1:
+                seleccion += 1
+            elif tecla == 10 and visibles:
+                return visibles[seleccion]
+            elif tecla == 27:
                 return None
 
     def mostrar_lista_reservas_navegable(self, reservas):
@@ -653,3 +700,82 @@ class InterfazTurnos:
                 return False
             else:
                 error = True 
+
+    def mostrar_detalles_reserva(self, reserva):
+        """
+        Muestra los detalles completos de una reserva seleccionada.
+        """
+        self.stdscr.clear()
+        self.stdscr.attron(curses.color_pair(1))
+        self.stdscr.addstr(1, (self.ancho - len("DETALLES DE RESERVA")) // 2, "DETALLES DE RESERVA")
+        self.stdscr.attroff(curses.color_pair(1))
+        
+        y = 4
+        fecha, hora = reserva["turno"]["fecha_hora"]
+        
+        # Información del turno
+        self.stdscr.attron(curses.color_pair(2))
+        self.stdscr.addstr(y, 4, "INFORMACIÓN DEL TURNO:")
+        self.stdscr.attroff(curses.color_pair(2))
+        y += 1
+        self.stdscr.addstr(y, 6, f"Fecha: {fecha}")
+        self.stdscr.addstr(y+1, 6, f"Hora: {hora}")
+        self.stdscr.addstr(y+2, 6, f"Servicio: {reserva['turno']['servicio']}")
+        self.stdscr.addstr(y+3, 6, f"Profesional: {reserva['turno']['profesional']}")
+        y += 5
+        
+        # Información del cliente
+        self.stdscr.attron(curses.color_pair(2))
+        self.stdscr.addstr(y, 4, "INFORMACIÓN DEL CLIENTE:")
+        self.stdscr.attroff(curses.color_pair(2))
+        y += 1
+        self.stdscr.addstr(y, 6, f"Nombre: {reserva['nombre']}")
+        self.stdscr.addstr(y+1, 6, f"Teléfono: {reserva['telefono']}")
+        self.stdscr.addstr(y+2, 6, f"DNI: {reserva['documento']}")
+        y += 4
+        
+        # Estado y monto
+        self.stdscr.attron(curses.color_pair(2))
+        self.stdscr.addstr(y, 4, "ESTADO Y PAGO:")
+        self.stdscr.attroff(curses.color_pair(2))
+        y += 1
+        
+        estado = reserva.get("estado", "Pendiente")
+        monto = reserva.get("montoCobrado")
+        
+        # Mostrar estado con color según el tipo
+        if estado == "Atendida":
+            self.stdscr.attron(curses.color_pair(1))  # Verde/Cyan
+            self.stdscr.addstr(y, 6, f"Estado: {estado}")
+            self.stdscr.attroff(curses.color_pair(1))
+        elif estado == "No asistió":
+            self.stdscr.attron(curses.color_pair(3))  # Rojo
+            self.stdscr.addstr(y, 6, f"Estado: {estado}")
+            self.stdscr.attroff(curses.color_pair(3))
+        else:
+            self.stdscr.attron(curses.color_pair(4))  # Amarillo
+            self.stdscr.addstr(y, 6, f"Estado: {estado}")
+            self.stdscr.attroff(curses.color_pair(4))
+        
+        y += 1
+        
+        if monto is not None:
+            self.stdscr.attron(curses.color_pair(1))
+            self.stdscr.addstr(y, 6, f"Monto cobrado: ${monto:.2f}")
+            self.stdscr.attroff(curses.color_pair(1))
+        else:
+            if estado == "Atendida":
+                self.stdscr.attron(curses.color_pair(3))
+                self.stdscr.addstr(y, 6, "Monto cobrado: No registrado")
+                self.stdscr.attroff(curses.color_pair(3))
+            else:
+                self.stdscr.addstr(y, 6, "Monto cobrado: Pendiente")
+        
+        # Instrucciones
+        y += 3
+        self.stdscr.attron(curses.color_pair(4))
+        self.stdscr.addstr(y, 4, "Presione cualquier tecla para volver...")
+        self.stdscr.attroff(curses.color_pair(4))
+        
+        self.stdscr.refresh()
+        self.stdscr.getch() 
